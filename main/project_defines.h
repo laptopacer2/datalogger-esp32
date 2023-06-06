@@ -1,0 +1,25 @@
+#pragma once
+
+// RX CMD 
+#define uTX_nRX_PIN (16)
+#define uRX_nTX_PIN (17)
+#define NEXTION_UART_NUM (UART_NUM_1)
+#define NEXTION_BAUDRATE (921600)
+
+#define BUF_SIZE (1024)
+
+#define INITIAL_PAGE (HOME)
+
+#define SAMPLE_RATE_MAX_HZ (50)
+#define POINTS_PER_TEST_MAX (3000)
+#define MULTITEST_STORAGE_MAX (1000)
+
+
+#define LOADCELL_1_DOUT_PIN (12)
+#define LOADCELL_1_SCK_PIN (13)
+#define LOADCELL_2_DOUT_PIN (14)
+#define LOADCELL_2_SCK_PIN (15)
+#define LOADCELL_3_DOUT_PIN (18)
+#define LOADCELL_3_SCK_PIN (21)
+#define LOADCELL_4_DOUT_PIN (33)
+#define LOADCELL_4_SCK_PIN (34)
