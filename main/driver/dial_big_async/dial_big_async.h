@@ -3,7 +3,7 @@
 #include "driver/gpio.h"
 #include "stdint.h"
 
-#define DIALBIG_MAX_DEVS 4
+#define DIALBIG_DEVS_MAX 4
 #define DIALBIG_BITS_PER_FRAME 28
 #define DIALBIG_BITS_PER_CHAR 4
 #define DIALBIG_IDLE_TRESH_TICKS 10

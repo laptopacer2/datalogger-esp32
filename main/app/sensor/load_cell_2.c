@@ -21,10 +21,10 @@ static float tara_real = 0;
 static bool is_enabled = false;
 static bool is_initialized = false;
 
-void IRAM_ATTR data_done_2_cb(uint32_t raw)
+void data_done_2_cb(uint32_t raw)
 {
     // GET RAW PER SECOND
-    uint32_t ms = xTaskGetTickCountFromISR();
+    uint32_t ms = xTaskGetTickCount();
     int32_t delta_raw = (int32_t)raw - last_raw;
     int32_t deltat_ms = (int32_t)ms - last_ms;
     float rawps = (delta_raw * 1000.0) / deltat_ms;
@@ -52,9 +52,9 @@ void load_cell_2_init()
     }
 
     is_initialized = true;
+    is_enabled = false;
 
     hx711_init(&load_cell_2);
-    hx711_enable(&load_cell_2);
 }
 
 void load_cell_2_enable()

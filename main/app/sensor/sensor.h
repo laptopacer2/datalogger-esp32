@@ -2,6 +2,17 @@
 
 #include "stdbool.h"
 
+void load_cell_1_init();
+void load_cell_1_enable();
+void load_cell_1_disable();
+bool load_cell_1_is_enabled();
+void load_cell_1_set_tara();
+void load_cell_1_clear_tara();
+float load_cell_1_get_real();
+float load_cell_1_get_raw();
+float load_cell_1_get_rawps();
+float load_cell_1_get_realps();
+
 void load_cell_2_init();
 void load_cell_2_enable();
 void load_cell_2_disable();
@@ -12,3 +23,25 @@ float load_cell_2_get_real();
 float load_cell_2_get_raw();
 float load_cell_2_get_rawps();
 float load_cell_2_get_realps();
+
+void load_cell_3_init();
+void load_cell_3_enable();
+void load_cell_3_disable();
+bool load_cell_3_is_enabled();
+void load_cell_3_set_tara();
+void load_cell_3_clear_tara();
+float load_cell_3_get_real();
+float load_cell_3_get_raw();
+float load_cell_3_get_rawps();
+float load_cell_3_get_realps();
+
+void load_cell_4_init();
+void load_cell_4_enable();
+void load_cell_4_disable();
+bool load_cell_4_is_enabled();
+void load_cell_4_set_tara();
+void load_cell_4_clear_tara();
+float load_cell_4_get_real();
+float load_cell_4_get_raw();
+float load_cell_4_get_rawps();
+float load_cell_4_get_realps();

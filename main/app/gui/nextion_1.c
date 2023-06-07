@@ -49,36 +49,32 @@ void code_rcv_1_cb(nextion_cmd_t *cmd)
             SEND_EMPTY_MSG(main_queue, HOME_TARA_4_DISABLED, portMAX_DELAY)
         else if (page == 0 && component_id == 0x19 && event == 0x04)
             SEND_EMPTY_MSG(main_queue, HOME_TARA_4_ENABLED, portMAX_DELAY)
-        // HOME - TARA 5 BUTTON
-        else if (page == 0 && component_id == 0x20 && event == 0x03)
-            SEND_EMPTY_MSG(main_queue, HOME_TARA_5_DISABLED, portMAX_DELAY)
-        else if (page == 0 && component_id == 0x20 && event == 0x04)
-            SEND_EMPTY_MSG(main_queue, HOME_TARA_5_ENABLED, portMAX_DELAY)
-        // HOME - TARA 6 BUTTON
-        else if (page == 0 && component_id == 0x27 && event == 0x03)
-            SEND_EMPTY_MSG(main_queue, HOME_TARA_6_DISABLED, portMAX_DELAY)
-        else if (page == 0 && component_id == 0x27 && event == 0x04)
-            SEND_EMPTY_MSG(main_queue, HOME_TARA_6_ENABLED, portMAX_DELAY)
-        // HOME - TARA 7 BUTTON
-        else if (page == 0 && component_id == 0x2E && event == 0x03)
-            SEND_EMPTY_MSG(main_queue, HOME_TARA_7_DISABLED, portMAX_DELAY)
-        else if (page == 0 && component_id == 0x2E && event == 0x04)
-            SEND_EMPTY_MSG(main_queue, HOME_TARA_7_ENABLED, portMAX_DELAY)
-        // HOME - TARA 8 BUTTON
-        else if (page == 0 && component_id == 0x35 && event == 0x03)
-            SEND_EMPTY_MSG(main_queue, HOME_TARA_8_DISABLED, portMAX_DELAY)
-        else if (page == 0 && component_id == 0x35 && event == 0x04)
-            SEND_EMPTY_MSG(main_queue, HOME_TARA_8_ENABLED, portMAX_DELAY)
         // SYSTEM SETTINGS
         else if (page == 1 && component_id == 0x00)
             SEND2FRONT_EMPTY_MSG(main_queue, SYSTEM_SETTINGS_LOADED, portMAX_DELAY)
-        // CALIBRATION
+        // CALIBRATION LOADED
         else if (page == 2 && component_id == 0x00)
             SEND2FRONT_EMPTY_MSG(main_queue, CALIBRATION_LOADED, portMAX_DELAY)
+        // CALIBRATION - SWITCH 1
+        else if (page == 2 && component_id == 0x04 && event == 0x02)
+            SEND_EMPTY_MSG(main_queue, CALIBRATION_SWITCH_1_DISABLED, portMAX_DELAY)
+        else if (page == 2 && component_id == 0x04 && event == 0x03)
+            SEND_EMPTY_MSG(main_queue, CALIBRATION_SWITCH_1_ENABLED, portMAX_DELAY)
+        // CALIBRATION - SWITCH 2
         else if (page == 2 && component_id == 0x10 && event == 0x02)
             SEND_EMPTY_MSG(main_queue, CALIBRATION_SWITCH_2_DISABLED, portMAX_DELAY)
         else if (page == 2 && component_id == 0x10 && event == 0x03)
             SEND_EMPTY_MSG(main_queue, CALIBRATION_SWITCH_2_ENABLED, portMAX_DELAY)
+        // CALIBRATION - SWITCH 3
+        else if (page == 2 && component_id == 0x16 && event == 0x02)
+            SEND_EMPTY_MSG(main_queue, CALIBRATION_SWITCH_3_DISABLED, portMAX_DELAY)
+        else if (page == 2 && component_id == 0x16 && event == 0x03)
+            SEND_EMPTY_MSG(main_queue, CALIBRATION_SWITCH_3_ENABLED, portMAX_DELAY)
+        // CALIBRATION - SWITCH 4
+        else if (page == 2 && component_id == 0x1C && event == 0x02)
+            SEND_EMPTY_MSG(main_queue, CALIBRATION_SWITCH_4_DISABLED, portMAX_DELAY)
+        else if (page == 2 && component_id == 0x1C && event == 0x03)
+            SEND_EMPTY_MSG(main_queue, CALIBRATION_SWITCH_4_ENABLED, portMAX_DELAY)
         // UNKNOWN BUTTON
         else
         {
@@ -137,6 +133,19 @@ page_t nextion_1_get_page()
     return page;
 }
 
+void nextion_1_home_sensor_1_write_data(float data)
+{
+    char buff[15] = {0};
+    snprintf(buff, 15, "%.02f", data);
+    nextion_write_text_global(&nextion_1, "home", 10, buff);
+}
+
+void nextion_1_home_sensor_1_write_dataps(float dataps)
+{
+    char buff[15] = {0};
+    snprintf(buff, 15, "%.02f", dataps);
+    nextion_write_text_global(&nextion_1, "home", 12, buff);
+}
 void nextion_1_home_sensor_2_write_data(float data)
 {
     char buff[15] = {0};
@@ -150,10 +159,57 @@ void nextion_1_home_sensor_2_write_dataps(float dataps)
     snprintf(buff, 15, "%.02f", dataps);
     nextion_write_text_global(&nextion_1, "home", 18, buff);
 }
+void nextion_1_home_sensor_3_write_data(float data)
+{
+    char buff[15] = {0};
+    snprintf(buff, 15, "%.02f", data);
+    nextion_write_text_global(&nextion_1, "home", 20, buff);
+}
+
+void nextion_1_home_sensor_3_write_dataps(float dataps)
+{
+    char buff[15] = {0};
+    snprintf(buff, 15, "%.02f", dataps);
+    nextion_write_text_global(&nextion_1, "home", 22, buff);
+}
+void nextion_1_home_sensor_4_write_data(float data)
+{
+    char buff[15] = {0};
+    snprintf(buff, 15, "%.02f", data);
+    nextion_write_text_global(&nextion_1, "home", 25, buff);
+}
+
+void nextion_1_home_sensor_4_write_dataps(float dataps)
+{
+    char buff[15] = {0};
+    snprintf(buff, 15, "%.02f", dataps);
+    nextion_write_text_global(&nextion_1, "home", 27, buff);
+}
+
+void nextion_1_calibration_sensor_1_write_data(float data)
+{
+    char buff[15] = {0};
+    snprintf(buff, 15, "%.02f", data);
+    nextion_write_text_global(&nextion_1, "calibration", 7, buff);
+}
 
 void nextion_1_calibration_sensor_2_write_data(float data)
 {
     char buff[15] = {0};
     snprintf(buff, 15, "%.02f", data);
     nextion_write_text_global(&nextion_1, "calibration", 12, buff);
+}
+
+void nextion_1_calibration_sensor_3_write_data(float data)
+{
+    char buff[15] = {0};
+    snprintf(buff, 15, "%.02f", data);
+    nextion_write_text_global(&nextion_1, "calibration", 16, buff);
+}
+
+void nextion_1_calibration_sensor_4_write_data(float data)
+{
+    char buff[15] = {0};
+    snprintf(buff, 15, "%.02f", data);
+    nextion_write_text_global(&nextion_1, "calibration", 20, buff);
 }

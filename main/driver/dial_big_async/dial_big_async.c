@@ -12,13 +12,13 @@
 //  void dialbig_task_i1(void *arg);
 //  void dialbig_task_i2(void *arg);
 //  void dialbig_task_i3(void *arg);
-// static dialbig_task_t tasks[DIALBIG_MAX_DEVS] = {dialbig_task_i0};
-//  static QueueHandle_t queue_handle[DIALBIG_MAX_DEVS] = {0};
+// static dialbig_task_t tasks[DIALBIG_DEVS_MAX] = {dialbig_task_i0};
+//  static QueueHandle_t queue_handle[DIALBIG_DEVS_MAX] = {0};
 static QueueHandle_t queue_handle = NULL;
-static uint32_t tick_count[DIALBIG_MAX_DEVS] = {0};
-static int bit_count[DIALBIG_MAX_DEVS] = {0};
-static uint32_t frame[DIALBIG_MAX_DEVS] = {0};
-static dialbig_t *devs[DIALBIG_MAX_DEVS] = {0};
+static uint32_t tick_count[DIALBIG_DEVS_MAX] = {0};
+static int bit_count[DIALBIG_DEVS_MAX] = {0};
+static uint32_t frame[DIALBIG_DEVS_MAX] = {0};
+static dialbig_t *devs[DIALBIG_DEVS_MAX] = {0};
 static int slot = 0;
 
 static bool isr_service_installed = false;
@@ -92,7 +92,7 @@ static bool dialbig_frame_to_real(dialbig_data_t *real, uint32_t frame)
 
 void dialbig_task(void *arg)
 {
-    queue_handle = xQueueCreate(DIALBIG_BITS_PER_FRAME * DIALBIG_MAX_DEVS * 10, sizeof(dialbig_msg_t));
+    queue_handle = xQueueCreate(DIALBIG_BITS_PER_FRAME * DIALBIG_DEVS_MAX * 10, sizeof(dialbig_msg_t));
     dialbig_msg_t msg;
     while (1)
     {
@@ -136,7 +136,7 @@ void dialbig_task(void *arg)
 dialbig_res_t dialbig_init(dialbig_t *dev)
 {
     // CHECK AVAILABLE SLOT
-    if (slot >= DIALBIG_MAX_DEVS)
+    if (slot >= DIALBIG_DEVS_MAX)
     {
         ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
         return DIALBIG_NO_AVAILABLE_SLOT;
@@ -170,11 +170,10 @@ dialbig_res_t dialbig_init(dialbig_t *dev)
     data_conf.pull_up_en = 0;
     gpio_config(&data_conf);
 
+    // install gpio isr service
     if (!isr_service_installed)
     {
         isr_service_installed = true;
-
-        // install gpio isr service
         gpio_install_isr_service(0);
     }
 
@@ -190,7 +189,7 @@ dialbig_res_t dialbig_init(dialbig_t *dev)
     if (!task_initialized)
     {
         task_initialized = true;
-        xTaskCreate(dialbig_task, "dialbig_task", 2 * 1024, NULL, 1, NULL);
+        xTaskCreate(dialbig_task, "dialbig_task", 2 * 1024, NULL, 5, NULL);
     }
 
     return DIALBIG_OK;
@@ -202,7 +201,7 @@ dialbig_res_t dialbig_enable(dialbig_t *dev)
     gpio_set_level(dev->req_pin, 0);
 
     // enable intr hw
-    gpio_set_intr_type(dev->clk_pin, GPIO_INTR_POSEDGE);
+    gpio_set_intr_type(dev->clk_pin, GPIO_INTR_NEGEDGE);
     gpio_intr_enable(dev->clk_pin);
 
     return DIALBIG_OK;

@@ -12,13 +12,13 @@
 //  void dialshort_task_i1(void *arg);
 //  void dialshort_task_i2(void *arg);
 //  void dialshort_task_i3(void *arg);
-// static dialshort_task_t tasks[DIALSHORT_MAX_DEVS] = {dialshort_task_i0};
-//  static QueueHandle_t queue_handle[DIALSHORT_MAX_DEVS] = {0};
+// static dialshort_task_t tasks[DIALSHORT_DEVS_MAX] = {dialshort_task_i0};
+//  static QueueHandle_t queue_handle[DIALSHORT_DEVS_MAX] = {0};
 static QueueHandle_t queue_handle = NULL;
-static uint32_t tick_count[DIALSHORT_MAX_DEVS] = {0};
-static int bit_count[DIALSHORT_MAX_DEVS] = {0};
-static uint64_t frame[DIALSHORT_MAX_DEVS] = {0};
-static dialshort_t *devs[DIALSHORT_MAX_DEVS] = {0};
+static uint32_t tick_count[DIALSHORT_DEVS_MAX] = {0};
+static int bit_count[DIALSHORT_DEVS_MAX] = {0};
+static uint64_t frame[DIALSHORT_DEVS_MAX] = {0};
+static dialshort_t *devs[DIALSHORT_DEVS_MAX] = {0};
 static int slot = 0;
 
 static bool isr_service_installed = false;
@@ -94,7 +94,7 @@ static bool dialshort_frame_to_real(dialshort_data_t *real, uint64_t frame)
 
 void dialshort_task(void *arg)
 {
-    queue_handle = xQueueCreate(DIALSHORT_BITS_PER_FRAME * DIALSHORT_MAX_DEVS * 10, sizeof(dialshort_msg_t));
+    queue_handle = xQueueCreate(DIALSHORT_BITS_PER_FRAME * DIALSHORT_DEVS_MAX * 10, sizeof(dialshort_msg_t));
     dialshort_msg_t msg;
     while (1)
     {
@@ -138,7 +138,7 @@ void dialshort_task(void *arg)
 dialshort_res_t dialshort_init(dialshort_t *dev)
 {
     // CHECK AVAILABLE SLOT
-    if (slot >= DIALSHORT_MAX_DEVS)
+    if (slot >= DIALSHORT_DEVS_MAX)
     {
         ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
         return DIALSHORT_NO_AVAILABLE_SLOT;
@@ -172,11 +172,10 @@ dialshort_res_t dialshort_init(dialshort_t *dev)
     data_conf.pull_up_en = 0;
     gpio_config(&data_conf);
 
+    // install gpio isr service
     if (!isr_service_installed)
     {
         isr_service_installed = true;
-
-        // install gpio isr service
         gpio_install_isr_service(0);
     }
 
@@ -192,7 +191,7 @@ dialshort_res_t dialshort_init(dialshort_t *dev)
     if (!task_initialized)
     {
         task_initialized = true;
-        xTaskCreate(dialshort_task, "dialshort_task", 2 * 1024, NULL, 1, NULL);
+        xTaskCreate(dialshort_task, "dialshort_task", 2 * 1024, NULL, 5, NULL);
     }
 
     return DIALSHORT_OK;
@@ -204,7 +203,7 @@ dialshort_res_t dialshort_enable(dialshort_t *dev)
     gpio_set_level(dev->req_pin, 0);
 
     // enable intr hw
-    gpio_set_intr_type(dev->clk_pin, GPIO_INTR_POSEDGE);
+    gpio_set_intr_type(dev->clk_pin, GPIO_INTR_NEGEDGE);
     gpio_intr_enable(dev->clk_pin);
 
     return DIALSHORT_OK;

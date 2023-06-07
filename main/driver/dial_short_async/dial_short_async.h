@@ -3,7 +3,7 @@
 #include "driver/gpio.h"
 #include "stdint.h"
 
-#define DIALSHORT_MAX_DEVS 4
+#define DIALSHORT_DEVS_MAX 4
 #define DIALSHORT_BITS_PER_FRAME 52
 #define DIALSHORT_BITS_PER_CHAR 4
 #define DIALSHORT_IDLE_TRESH_TICKS 10

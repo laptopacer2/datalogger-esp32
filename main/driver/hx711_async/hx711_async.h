@@ -4,12 +4,14 @@
 #include "stdint.h"
 
 #define HX711_DEVS_MAX (4)
+#define HX711_PULSES_PER_FRAME (24)
 
 typedef enum
 {
     HX711_OK,
     HX711_ERROR,
     HX711_WAITING,
+    HX711_NO_AVAILABLE_SLOT,
 } hx711_res_t;
 
 typedef enum

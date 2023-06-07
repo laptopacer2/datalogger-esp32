@@ -12,3 +12,4 @@ void app_main(void)
     ESP_LOGI(TAG, "START");
     xTaskCreate(main_task, "main_task", 4 * 1024, NULL, 2, NULL);
 }
+ 

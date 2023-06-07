@@ -7,12 +7,17 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/queue.h"
+#include "freertos/timers.h"
 #include "esp_rom_sys.h"
 #include "esp_intr_alloc.h"
+#include "esp_log.h"
 
 #define TAG "HX711"
 
-bool isr_service_installed = false;
+static hx711_t *devs[HX711_DEVS_MAX] = {0};
+static int slot = 0;
+
+static bool isr_service_installed = false;
 
 #define NOP() __asm__ __volatile__("nop")
 #define nNOP(x)                     \
@@ -23,20 +28,27 @@ bool isr_service_installed = false;
         }                           \
     }
 
-#define PULSE(sck_pin)              \
-    {                               \
-        gpio_set_level(sck_pin, 1); \
-        nNOP(10);                   \
-        gpio_set_level(sck_pin, 0); \
-        nNOP(10);                   \
+// todo: add critical section
+#define PULSE(sck_pin)                                    \
+    {                                                     \
+        portMUX_TYPE spin = portMUX_INITIALIZER_UNLOCKED; \
+        taskENTER_CRITICAL(&spin);                        \
+        gpio_set_level(sck_pin, 1);                       \
+        nNOP(10);                                         \
+        taskEXIT_CRITICAL(&spin);                         \
+        gpio_set_level(sck_pin, 0);                       \
+        nNOP(10);                                         \
     }
 
-void IRAM_ATTR hx711_global_isr(void *arg)
+void hx711_pendfunc(void *arg1, uint32_t arg2)
 {
-    hx711_t *dev = (hx711_t *)arg;
 
+    int slot = (int)arg1;
+    hx711_t *dev = devs[slot];
+
+    // GET BITS
     uint32_t count = 0;
-    for (int i = 0; i < 24; i++)
+    for (int i = 0; i < HX711_PULSES_PER_FRAME; i++)
     {
         PULSE(dev->sck_pin);
 
@@ -45,6 +57,7 @@ void IRAM_ATTR hx711_global_isr(void *arg)
             count++;
     }
 
+    // NEXT REQUEST
     if (dev->mux_pga == HX711_CH_A_GAIN_128)
     {
         PULSE(dev->sck_pin);
@@ -56,22 +69,44 @@ void IRAM_ATTR hx711_global_isr(void *arg)
         PULSE(dev->sck_pin);
     }
     else
-    { // HX711_CH_B_GAIN_32
+    {
         PULSE(dev->sck_pin);
         PULSE(dev->sck_pin);
     }
 
+    // DECODE
     count = count ^ 0x800000;
 
-    // RUN DATA DONE CB
-    if (dev->data_done_cb)
-    {
-        dev->data_done_cb(count);
-    }
+    // USER CALLBACK
+    dev->data_done_cb(count);
+
+    // RE-ENABLE INTERRUPT
+    gpio_intr_enable(dev->dout_pin);
+}
+void IRAM_ATTR hx711_global_isr(void *arg)
+{
+
+    // DISABLE INTERRUPT TO PREVENT INNECESARY CALLS WHILE PROCCESING CURRENT CALL
+    int slot = (int)arg;
+    gpio_intr_disable(devs[slot]->dout_pin);
+
+    // APPEND FUNCTION ON FREERTOS TIMER TASK TO PROCCESS CURRENT CALL
+    BaseType_t xHigherPriorityTaskWoken = false;
+    xTimerPendFunctionCallFromISR(hx711_pendfunc, arg, 0, &xHigherPriorityTaskWoken);
+
+    // FORCE CONTEXT SWITCH TO TIMER TASK(PRIO 25 on MENUCONFIG)
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
 hx711_res_t hx711_init(hx711_t *dev)
 {
+    // CHECK AVAILABLE SLOT
+    if (slot >= HX711_DEVS_MAX)
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return HX711_NO_AVAILABLE_SLOT;
+    }
+
     // CONFIG RATE PIN
     if (dev->rate_pin != -1)
     {
@@ -104,24 +139,27 @@ hx711_res_t hx711_init(hx711_t *dev)
 
     // CONFIG DOUT PIN
     gpio_config_t dout_conf = {};
-    dout_conf.intr_type = GPIO_INTR_DISABLE;
+    dout_conf.intr_type = GPIO_INTR_LOW_LEVEL; // GPIO_INTR_DISABLE;
     dout_conf.mode = GPIO_MODE_INPUT;
     dout_conf.pin_bit_mask = (1ULL << (dev->dout_pin));
     dout_conf.pull_down_en = 0;
     dout_conf.pull_up_en = 0;
     gpio_config(&dout_conf);
 
+    // install gpio isr service
     if (!isr_service_installed)
     {
         isr_service_installed = true;
-
-        // install gpio isr service
         gpio_install_isr_service(0);
     }
 
     // add handler for dout pin
-    gpio_isr_handler_add(dev->dout_pin, hx711_global_isr, (void *)dev);
+    gpio_isr_handler_add(dev->dout_pin, hx711_global_isr, (void *)slot);
     gpio_intr_disable(dev->dout_pin);
+
+    // register slot
+    devs[slot] = dev;
+    slot++;
 
     return HX711_OK;
 }
@@ -131,7 +169,6 @@ hx711_res_t hx711_enable(hx711_t *dev)
     gpio_set_level(dev->sck_pin, 0);
 
     // enable intr hw
-    gpio_set_intr_type(dev->dout_pin, GPIO_INTR_LOW_LEVEL);
     gpio_intr_enable(dev->dout_pin);
 
     return HX711_OK;
@@ -140,7 +177,6 @@ hx711_res_t hx711_disable(hx711_t *dev)
 {
     // disable intr hw
     gpio_intr_disable(dev->dout_pin);
-    gpio_set_intr_type(dev->dout_pin, GPIO_INTR_DISABLE);
 
     // power off
     gpio_set_level(dev->sck_pin, 1);

@@ -47,30 +47,26 @@ void main_task(void *arg)
             home_tara_4_enabled_cb(&msg);
         else if (type == HOME_TARA_4_DISABLED)
             home_tara_4_disabled_cb(&msg);
-        else if (type == HOME_TARA_5_ENABLED)
-            home_tara_5_enabled_cb(&msg);
-        else if (type == HOME_TARA_5_DISABLED)
-            home_tara_5_disabled_cb(&msg);
-        else if (type == HOME_TARA_6_ENABLED)
-            home_tara_6_enabled_cb(&msg);
-        else if (type == HOME_TARA_6_DISABLED)
-            home_tara_6_disabled_cb(&msg);
-        else if (type == HOME_TARA_7_ENABLED)
-            home_tara_7_enabled_cb(&msg);
-        else if (type == HOME_TARA_7_DISABLED)
-            home_tara_7_disabled_cb(&msg);
-        else if (type == HOME_TARA_8_ENABLED)
-            home_tara_8_enabled_cb(&msg);
-        else if (type == HOME_TARA_8_DISABLED)
-            home_tara_8_disabled_cb(&msg);
         else if (type == SYSTEM_SETTINGS_LOADED)
             system_settings_loaded_cb(&msg);
         else if (type == CALIBRATION_LOADED)
             calibration_loaded_cb(&msg);
+        else if (type == CALIBRATION_SWITCH_1_DISABLED)
+            calibration_switch_1_disabled_cb(&msg);
+        else if (type == CALIBRATION_SWITCH_1_ENABLED)
+            calibration_switch_1_enabled_cb(&msg);
         else if (type == CALIBRATION_SWITCH_2_DISABLED)
             calibration_switch_2_disabled_cb(&msg);
         else if (type == CALIBRATION_SWITCH_2_ENABLED)
             calibration_switch_2_enabled_cb(&msg);
+        else if (type == CALIBRATION_SWITCH_3_DISABLED)
+            calibration_switch_3_disabled_cb(&msg);
+        else if (type == CALIBRATION_SWITCH_3_ENABLED)
+            calibration_switch_3_enabled_cb(&msg);
+        else if (type == CALIBRATION_SWITCH_4_DISABLED)
+            calibration_switch_4_disabled_cb(&msg);
+        else if (type == CALIBRATION_SWITCH_4_ENABLED)
+            calibration_switch_4_enabled_cb(&msg);
         else if (type == NEXTION_UPDATE)
             nextion_update_cb(&msg);
         else
