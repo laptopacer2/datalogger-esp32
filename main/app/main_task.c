@@ -67,6 +67,26 @@ void main_task(void *arg)
             calibration_switch_4_disabled_cb(&msg);
         else if (type == CALIBRATION_SWITCH_4_ENABLED)
             calibration_switch_4_enabled_cb(&msg);
+        else if (type == CALIBRATION_SWITCH_5_DISABLED)
+            calibration_switch_5_disabled_cb(&msg);
+        else if (type == CALIBRATION_SWITCH_5_ENABLED)
+            calibration_switch_5_enabled_cb(&msg);
+        else if (type == CALIBRATION_SENSOR_5_UNIT_CHANGED)
+            calibration_sensor_5_unit_changed_cb(&msg);
+        else if (type == CALIBRATION_SENSOR_6_UNIT_CHANGED)
+            calibration_sensor_6_unit_changed_cb(&msg);
+        else if (type == CALIBRATION_SENSOR_7_UNIT_CHANGED)
+            calibration_sensor_7_unit_changed_cb(&msg);
+        else if (type == CALIBRATION_SENSOR_8_UNIT_CHANGED)
+            calibration_sensor_8_unit_changed_cb(&msg);
+        else if (type == CALIBRATION_SENSOR_5_UNITPS_CHANGED)
+            calibration_sensor_5_unitps_changed_cb(&msg);
+        else if (type == CALIBRATION_SENSOR_6_UNITPS_CHANGED)
+            calibration_sensor_6_unitps_changed_cb(&msg);
+        else if (type == CALIBRATION_SENSOR_7_UNITPS_CHANGED)
+            calibration_sensor_7_unitps_changed_cb(&msg);
+        else if (type == CALIBRATION_SENSOR_8_UNITPS_CHANGED)
+            calibration_sensor_8_unitps_changed_cb(&msg);
         else if (type == NEXTION_UPDATE)
             nextion_update_cb(&msg);
         else

@@ -173,3 +173,25 @@ nextion_res_t nextion_write_text_global(nextion_t *dev, char *global, int text_i
 
     return NEXTION_OK;
 }
+
+nextion_res_t nextion_write_combobox_global(nextion_t *dev, char *global, int combobox_index, char *content)
+{
+
+    char buff[50] = {0};
+    int size = snprintf(buff, 50, "%s.cb%i.txt=\"%s\"\xff\xff\xff", global, combobox_index, content);
+
+    if (size < 0 || size >= 50)
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return NEXTION_ERROR;
+    }
+
+    int n = uart_write_bytes(dev->uart_num, buff, size);
+    if (n != size)
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return NEXTION_ERROR;
+    }
+
+    return NEXTION_OK;
+}

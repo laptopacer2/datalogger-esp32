@@ -74,3 +74,4 @@ typedef struct
 
 nextion_res_t nextion_init(nextion_t *dev);
 nextion_res_t nextion_write_text_global(nextion_t *dev,char* global, int text_index,  char* content);
+nextion_res_t nextion_write_combobox_global(nextion_t *dev, char *global, int combobox_index, char *content);

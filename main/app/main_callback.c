@@ -27,6 +27,8 @@ void main_task_init()
     load_cell_3_init();
     load_cell_4_init();
 
+    dial_big_1_init();
+
     nextion_1_init();
 }
 
@@ -130,7 +132,34 @@ void calibration_switch_4_enabled_cb(msg_t *msg)
 {
     load_cell_4_enable();
 }
+void calibration_switch_5_disabled_cb(msg_t *msg)
+{
+    dial_big_1_disable();
+}
+void calibration_switch_5_enabled_cb(msg_t *msg)
+{
+    dial_big_1_enable();
+}
 
+void calibration_sensor_5_unit_changed_cb(msg_t *msg)
+{
+    char *unit = (char *)(msg->content.addr);
+    nextion_1_calibration_sensor_5_write_unit(unit);
+    nextion_1_home_sensor_5_write_unit(unit);
+    free(unit);
+}
+void calibration_sensor_6_unit_changed_cb(msg_t *msg) {}
+void calibration_sensor_7_unit_changed_cb(msg_t *msg) {}
+void calibration_sensor_8_unit_changed_cb(msg_t *msg) {}
+void calibration_sensor_5_unitps_changed_cb(msg_t *msg)
+{
+    char *unitps = (char *)(msg->content.addr);
+    nextion_1_home_sensor_5_write_unitps(unitps);
+    free(unitps);
+}
+void calibration_sensor_6_unitps_changed_cb(msg_t *msg) {}
+void calibration_sensor_7_unitps_changed_cb(msg_t *msg) {}
+void calibration_sensor_8_unitps_changed_cb(msg_t *msg) {}
 void nextion_update_cb(msg_t *msg)
 {
     // ESP_LOGI(TAG, "%s", __func__);
@@ -169,6 +198,15 @@ void nextion_update_cb(msg_t *msg)
             float dataps = load_cell_4_get_realps();
             nextion_1_home_sensor_4_write_dataps(dataps);
         }
+        if (dial_big_1_is_enabled())
+        {
+            float real = dial_big_1_get_real();
+            int decimals = dial_big_1_get_decimals();
+            nextion_1_home_sensor_5_write_data(real, decimals);
+
+            float realps = dial_big_1_get_realps();
+            nextion_1_home_sensor_5_write_dataps(realps, decimals);
+        }
     }
     else if (page == CALIBRATION)
     {
@@ -191,6 +229,12 @@ void nextion_update_cb(msg_t *msg)
         {
             float data = load_cell_4_get_real();
             nextion_1_calibration_sensor_4_write_data(data);
+        }
+        if (dial_big_1_is_enabled())
+        {
+            float data = dial_big_1_get_real();
+            int decimals = dial_big_1_get_decimals();
+            nextion_1_calibration_sensor_5_write_data(data, decimals);
         }
     }
     else

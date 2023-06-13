@@ -15,8 +15,15 @@ void nextion_1_home_sensor_3_write_data(float data);
 void nextion_1_home_sensor_3_write_dataps(float dataps);
 void nextion_1_home_sensor_4_write_data(float data);
 void nextion_1_home_sensor_4_write_dataps(float dataps);
+void nextion_1_home_sensor_5_write_data(float data, int decimals);
+void nextion_1_home_sensor_5_write_dataps(float dataps, int decimals);
+void nextion_1_home_sensor_5_write_unit(char *unit);
+void nextion_1_home_sensor_5_write_unitps(char *unit);
 
 void nextion_1_calibration_sensor_1_write_data(float data);
 void nextion_1_calibration_sensor_2_write_data(float data);
 void nextion_1_calibration_sensor_3_write_data(float data);
 void nextion_1_calibration_sensor_4_write_data(float data);
+void nextion_1_calibration_sensor_5_write_data(float data, int decimals);
+
+void nextion_1_calibration_sensor_5_write_unit(char *unit);

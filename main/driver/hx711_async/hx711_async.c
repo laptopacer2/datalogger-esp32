@@ -82,6 +82,8 @@ void hx711_pendfunc(void *arg1, uint32_t arg2)
 
     // RE-ENABLE INTERRUPT
     gpio_intr_enable(dev->dout_pin);
+
+   // portYIELD();
 }
 void IRAM_ATTR hx711_global_isr(void *arg)
 {
@@ -95,7 +97,7 @@ void IRAM_ATTR hx711_global_isr(void *arg)
     xTimerPendFunctionCallFromISR(hx711_pendfunc, arg, 0, &xHigherPriorityTaskWoken);
 
     // FORCE CONTEXT SWITCH TO TIMER TASK(PRIO 25 on MENUCONFIG)
-    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    //portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
 hx711_res_t hx711_init(hx711_t *dev)
@@ -139,7 +141,7 @@ hx711_res_t hx711_init(hx711_t *dev)
 
     // CONFIG DOUT PIN
     gpio_config_t dout_conf = {};
-    dout_conf.intr_type = GPIO_INTR_LOW_LEVEL; // GPIO_INTR_DISABLE;
+    dout_conf.intr_type = GPIO_INTR_DISABLE;
     dout_conf.mode = GPIO_MODE_INPUT;
     dout_conf.pin_bit_mask = (1ULL << (dev->dout_pin));
     dout_conf.pull_down_en = 0;
@@ -168,6 +170,9 @@ hx711_res_t hx711_enable(hx711_t *dev)
     // power on
     gpio_set_level(dev->sck_pin, 0);
 
+    // intr type
+    gpio_set_intr_type(dev->dout_pin, GPIO_INTR_LOW_LEVEL);
+
     // enable intr hw
     gpio_intr_enable(dev->dout_pin);
 
@@ -177,6 +182,9 @@ hx711_res_t hx711_disable(hx711_t *dev)
 {
     // disable intr hw
     gpio_intr_disable(dev->dout_pin);
+
+    // intr type
+    gpio_set_intr_type(dev->dout_pin, GPIO_INTR_DISABLE);
 
     // power off
     gpio_set_level(dev->sck_pin, 1);

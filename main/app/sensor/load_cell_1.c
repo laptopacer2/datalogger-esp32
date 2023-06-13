@@ -21,7 +21,7 @@ static float tara_real = 0;
 static bool is_enabled = false;
 static bool is_initialized = false;
 
-void data_done_1_cb(uint32_t raw)
+void load_cell_data_done_1_cb(uint32_t raw)
 {
     // GET RAW PER SECOND
     uint32_t ms = xTaskGetTickCount();
@@ -39,7 +39,7 @@ hx711_t load_cell_1 = {
     .mux_pga = HX711_CH_A_GAIN_64,
     .dout_pin = LOADCELL_1_DOUT_PIN,
     .sck_pin = LOADCELL_1_SCK_PIN,
-    .data_done_cb = data_done_1_cb,
+    .data_done_cb = load_cell_data_done_1_cb,
     .rate_pin = -1,
 };
 

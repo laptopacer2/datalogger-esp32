@@ -1,6 +1,6 @@
 #pragma once
 
-// RX CMD 
+// RX CMD
 #define uTX_nRX_PIN (16)
 #define uRX_nTX_PIN (17)
 #define NEXTION_UART_NUM (UART_NUM_1)
@@ -14,7 +14,6 @@
 #define POINTS_PER_TEST_MAX (3000)
 #define MULTITEST_STORAGE_MAX (1000)
 
-
 #define LOADCELL_1_DOUT_PIN (12)
 #define LOADCELL_1_SCK_PIN (13)
 #define LOADCELL_2_DOUT_PIN (14)
@@ -23,3 +22,16 @@
 #define LOADCELL_3_SCK_PIN (21)
 #define LOADCELL_4_DOUT_PIN (33)
 #define LOADCELL_4_SCK_PIN (34)
+
+#define DIALBIG_1_DATA_PIN (6)
+#define DIALBIG_1_CLK_PIN (7)
+#define DIALBIG_1_REQ_PIN (8)
+#define DIALBIG_2_DATA_PIN (9)
+#define DIALBIG_2_CLK_PIN (10)
+#define DIALBIG_2_REQ_PIN (11)
+#define DIALBIG_3_DATA_PIN (35)
+#define DIALBIG_3_CLK_PIN (36)
+#define DIALBIG_3_REQ_PIN (37)
+#define DIALBIG_4_DATA_PIN (38)
+#define DIALBIG_4_CLK_PIN (39)
+#define DIALBIG_4_REQ_PIN (40)

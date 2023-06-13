@@ -8,12 +8,6 @@
 
 #define TAG "DIAL_BIG_ASYNC"
 
-// void dialbig_task_i0(void *arg);
-//  void dialbig_task_i1(void *arg);
-//  void dialbig_task_i2(void *arg);
-//  void dialbig_task_i3(void *arg);
-// static dialbig_task_t tasks[DIALBIG_DEVS_MAX] = {dialbig_task_i0};
-//  static QueueHandle_t queue_handle[DIALBIG_DEVS_MAX] = {0};
 static QueueHandle_t queue_handle = NULL;
 static uint32_t tick_count[DIALBIG_DEVS_MAX] = {0};
 static int bit_count[DIALBIG_DEVS_MAX] = {0};
@@ -85,6 +79,7 @@ static bool dialbig_frame_to_real(dialbig_data_t *real, uint32_t frame)
 
     float raw_val = group_two * 10000.0 + group_three * 1000.0 + group_four * 100.0 + group_five * 10.0 + group_six * 1.0;
     float unsigned_val = (real->unit == DIALBIG_MM) ? raw_val / 100.0 : raw_val / 10000.0;
+    real->decimals = (real->unit == DIALBIG_MM) ? 2 : 4;
     real->val = unsigned_val * sign;
 
     return true;
@@ -105,8 +100,14 @@ void dialbig_task(void *arg)
         uint32_t new_bit = msg.bit;
 
         // NEW FRAME DETECTED
-        if (new_tick_count - old_tick_count >= DIALBIG_IDLE_TRESH_TICKS)
+        if (new_tick_count - old_tick_count >= DIALBIG_IDLE_TRESH_TICKS) // DIALBIG_IDLE_TRESH_TICKS)
         {
+            // ESP_LOGI(TAG, "count:%i  frame:%lu\n", bit_count[slot], frame[slot]);
+            if (bit_count[slot] != DIALBIG_BITS_PER_FRAME)
+            {
+                ESP_LOGW(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+            }
+
             bit_count[slot] = 0;
             frame[slot] = 0;
         }
@@ -114,6 +115,7 @@ void dialbig_task(void *arg)
         // ACUMULATE BITS
         bit_count[slot] = bit_count[slot] + 1;
         frame[slot] = (frame[slot] << 1) + new_bit;
+        tick_count[slot] = new_tick_count;
 
         // FRAME COMPLETED
         if (bit_count[slot] == DIALBIG_BITS_PER_FRAME)
@@ -189,7 +191,7 @@ dialbig_res_t dialbig_init(dialbig_t *dev)
     if (!task_initialized)
     {
         task_initialized = true;
-        xTaskCreate(dialbig_task, "dialbig_task", 2 * 1024, NULL, 5, NULL);
+        xTaskCreate(dialbig_task, "dialbig_task", 2 * 1024, NULL, 25, NULL);
     }
 
     return DIALBIG_OK;

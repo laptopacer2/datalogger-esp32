@@ -20,11 +20,19 @@ typedef enum
 {
     DIALBIG_MM,
     DIALBIG_INCH,
+    DIAL_BIG_UNIT_MAX,
 } dialbig_unit_t;
+
+typedef enum{
+    DIALBIG_2_DECIMALS,
+    DIALBIG_4_DECIMALS,
+    DIALBIG_DECIMALS_MAX,
+}dialbig_decimals_t;
 
 typedef struct
 {
     dialbig_unit_t unit;
+    int decimals;
     float val;
 } dialbig_data_t;
 
@@ -45,12 +53,6 @@ typedef struct
     gpio_num_t clk_pin;
     gpio_num_t req_pin;
 } dialbig_t;
-
-typedef struct
-{
-    dialbig_t *dev;
-    int slot;
-} dialbig_context_t;
 
 dialbig_res_t dialbig_init(dialbig_t *dev);
 dialbig_res_t dialbig_enable(dialbig_t *dev);

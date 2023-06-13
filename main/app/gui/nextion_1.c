@@ -13,6 +13,16 @@
 
 page_t page = INITIAL_PAGE;
 
+/*
+███╗   ██╗███████╗██╗  ██╗████████╗██╗ ██████╗ ███╗   ██╗     ██████╗ ██████╗ ██████╗ ███████╗
+████╗  ██║██╔════╝╚██╗██╔╝╚══██╔══╝██║██╔═══██╗████╗  ██║    ██╔════╝██╔═══██╗██╔══██╗██╔════╝
+██╔██╗ ██║█████╗   ╚███╔╝    ██║   ██║██║   ██║██╔██╗ ██║    ██║     ██║   ██║██████╔╝█████╗
+██║╚██╗██║██╔══╝   ██╔██╗    ██║   ██║██║   ██║██║╚██╗██║    ██║     ██║   ██║██╔══██╗██╔══╝
+██║ ╚████║███████╗██╔╝ ██╗   ██║   ██║╚██████╔╝██║ ╚████║    ╚██████╗╚██████╔╝██║  ██║███████╗
+╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝     ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝
+
+*/
+
 void data_rcv_1_cb(uint8_t *buffer, int size)
 {
     ESP_LOGW(TAG, "file:%s,line:%i", __FILE__, __LINE__);
@@ -75,6 +85,11 @@ void code_rcv_1_cb(nextion_cmd_t *cmd)
             SEND_EMPTY_MSG(main_queue, CALIBRATION_SWITCH_4_DISABLED, portMAX_DELAY)
         else if (page == 2 && component_id == 0x1C && event == 0x03)
             SEND_EMPTY_MSG(main_queue, CALIBRATION_SWITCH_4_ENABLED, portMAX_DELAY)
+        // CALIBRATION - SWITCH 5
+        else if (page == 2 && component_id == 0x22 && event == 0x02)
+            SEND_EMPTY_MSG(main_queue, CALIBRATION_SWITCH_5_DISABLED, portMAX_DELAY)
+        else if (page == 2 && component_id == 0x22 && event == 0x03)
+            SEND_EMPTY_MSG(main_queue, CALIBRATION_SWITCH_5_ENABLED, portMAX_DELAY)
         // UNKNOWN BUTTON
         else
         {
@@ -133,6 +148,16 @@ page_t nextion_1_get_page()
     return page;
 }
 
+/*
+██╗  ██╗ ██████╗ ███╗   ███╗███████╗
+██║  ██║██╔═══██╗████╗ ████║██╔════╝
+███████║██║   ██║██╔████╔██║█████╗
+██╔══██║██║   ██║██║╚██╔╝██║██╔══╝
+██║  ██║╚██████╔╝██║ ╚═╝ ██║███████╗
+╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝
+
+*/
+
 void nextion_1_home_sensor_1_write_data(float data)
 {
     char buff[15] = {0};
@@ -186,6 +211,65 @@ void nextion_1_home_sensor_4_write_dataps(float dataps)
     nextion_write_text_global(&nextion_1, "home", 27, buff);
 }
 
+void nextion_1_home_sensor_5_write_data(float data, int decimals)
+{
+    char buff[15] = {0};
+    if (decimals == 2)
+    {
+        snprintf(buff, 15, "%.02f", data);
+    }
+    else if (decimals == 4)
+    {
+        snprintf(buff, 15, "%.04f", data);
+    }
+    else
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return;
+    }
+
+    nextion_write_text_global(&nextion_1, "home", 30, buff);
+}
+
+void nextion_1_home_sensor_5_write_dataps(float dataps, int decimals)
+{
+    char buff[15] = {0};
+    if (decimals == 2)
+    {
+        snprintf(buff, 15, "%.02f", dataps);
+    }
+    else if (decimals == 4)
+    {
+        snprintf(buff, 15, "%.04f", dataps);
+    }
+    else
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return;
+    }
+    nextion_write_text_global(&nextion_1, "home", 32, buff);
+}
+
+void nextion_1_home_sensor_5_write_unit(char *unit)
+{
+    nextion_write_text_global(&nextion_1, "home", 31, unit);
+}
+
+void nextion_1_home_sensor_5_write_unitps(char *unit)
+{
+    nextion_write_text_global(&nextion_1, "home", 33, unit);
+}
+
+/*
+ ██████╗ █████╗ ██╗     ██╗██████╗ ██████╗  █████╗ ████████╗██╗ ██████╗ ███╗   ██╗
+██╔════╝██╔══██╗██║     ██║██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝██║██╔═══██╗████╗  ██║
+██║     ███████║██║     ██║██████╔╝██████╔╝███████║   ██║   ██║██║   ██║██╔██╗ ██║
+██║     ██╔══██║██║     ██║██╔══██╗██╔══██╗██╔══██║   ██║   ██║██║   ██║██║╚██╗██║
+╚██████╗██║  ██║███████╗██║██████╔╝██║  ██║██║  ██║   ██║   ██║╚██████╔╝██║ ╚████║
+ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
+
+*/
+
 void nextion_1_calibration_sensor_1_write_data(float data)
 {
     char buff[15] = {0};
@@ -212,4 +296,28 @@ void nextion_1_calibration_sensor_4_write_data(float data)
     char buff[15] = {0};
     snprintf(buff, 15, "%.02f", data);
     nextion_write_text_global(&nextion_1, "calibration", 20, buff);
+}
+
+void nextion_1_calibration_sensor_5_write_data(float data, int decimals)
+{
+    char buff[15] = {0};
+    if (decimals == 2)
+    {
+        snprintf(buff, 15, "%.02f", data);
+    }
+    else if (decimals == 4)
+    {
+        snprintf(buff, 15, "%.04f", data);
+    }
+    else
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return;
+    }
+    nextion_write_text_global(&nextion_1, "calibration", 24, buff);
+}
+
+void nextion_1_calibration_sensor_5_write_unit(char *unit)
+{
+    nextion_write_combobox_global(&nextion_1, "calibration", 4, unit);
 }

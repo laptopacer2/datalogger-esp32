@@ -1,6 +1,7 @@
 #pragma once
 
 #include "stdbool.h"
+#include "dial_big_async.h"
 
 void load_cell_1_init();
 void load_cell_1_enable();
@@ -45,3 +46,11 @@ float load_cell_4_get_real();
 float load_cell_4_get_raw();
 float load_cell_4_get_rawps();
 float load_cell_4_get_realps();
+
+void dial_big_1_init();
+void dial_big_1_enable();
+void dial_big_1_disable();
+bool dial_big_1_is_enabled();
+float dial_big_1_get_real();
+float dial_big_1_get_realps();
+int dial_big_1_get_decimals();
