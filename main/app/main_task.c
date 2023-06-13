@@ -28,7 +28,7 @@ void main_task(void *arg)
         xQueueReceive(main_queue, &msg, portMAX_DELAY);
         msg_type_t type = msg.type;
 
-        // NEXTION MESSAGES
+        // HOME
         if (type == HOME_LOADED)
             home_loaded_cb(&msg);
         else if (type == HOME_TARA_1_ENABLED)
@@ -47,8 +47,10 @@ void main_task(void *arg)
             home_tara_4_enabled_cb(&msg);
         else if (type == HOME_TARA_4_DISABLED)
             home_tara_4_disabled_cb(&msg);
+        // SETTINGS
         else if (type == SYSTEM_SETTINGS_LOADED)
             system_settings_loaded_cb(&msg);
+        // CALIBRATION
         else if (type == CALIBRATION_LOADED)
             calibration_loaded_cb(&msg);
         else if (type == CALIBRATION_SWITCH_1_DISABLED)
@@ -71,22 +73,38 @@ void main_task(void *arg)
             calibration_switch_5_disabled_cb(&msg);
         else if (type == CALIBRATION_SWITCH_5_ENABLED)
             calibration_switch_5_enabled_cb(&msg);
-        else if (type == CALIBRATION_SENSOR_5_UNIT_CHANGED)
-            calibration_sensor_5_unit_changed_cb(&msg);
-        else if (type == CALIBRATION_SENSOR_6_UNIT_CHANGED)
-            calibration_sensor_6_unit_changed_cb(&msg);
-        else if (type == CALIBRATION_SENSOR_7_UNIT_CHANGED)
-            calibration_sensor_7_unit_changed_cb(&msg);
-        else if (type == CALIBRATION_SENSOR_8_UNIT_CHANGED)
-            calibration_sensor_8_unit_changed_cb(&msg);
-        else if (type == CALIBRATION_SENSOR_5_UNITPS_CHANGED)
-            calibration_sensor_5_unitps_changed_cb(&msg);
-        else if (type == CALIBRATION_SENSOR_6_UNITPS_CHANGED)
-            calibration_sensor_6_unitps_changed_cb(&msg);
-        else if (type == CALIBRATION_SENSOR_7_UNITPS_CHANGED)
-            calibration_sensor_7_unitps_changed_cb(&msg);
-        else if (type == CALIBRATION_SENSOR_8_UNITPS_CHANGED)
-            calibration_sensor_8_unitps_changed_cb(&msg);
+        else if (type == CALIBRATION_SWITCH_6_DISABLED)
+            calibration_switch_6_disabled_cb(&msg);
+        else if (type == CALIBRATION_SWITCH_6_ENABLED)
+            calibration_switch_6_enabled_cb(&msg);
+        else if (type == CALIBRATION_SWITCH_7_DISABLED)
+            calibration_switch_7_disabled_cb(&msg);
+        else if (type == CALIBRATION_SWITCH_7_ENABLED)
+            calibration_switch_7_enabled_cb(&msg);
+        else if (type == CALIBRATION_SWITCH_8_DISABLED)
+            calibration_switch_8_disabled_cb(&msg);
+        else if (type == CALIBRATION_SWITCH_8_ENABLED)
+            calibration_switch_8_enabled_cb(&msg);
+
+        // EXTERNAL ( SENSORS, ...)
+        else if (type == EXTERNAL_SENSOR_5_UNIT_CHANGED)
+            external_sensor_5_unit_changed_cb(&msg);
+        else if (type == EXTERNAL_SENSOR_6_UNIT_CHANGED)
+            external_sensor_6_unit_changed_cb(&msg);
+        else if (type == EXTERNAL_SENSOR_7_UNIT_CHANGED)
+            external_sensor_7_unit_changed_cb(&msg);
+        else if (type == EXTERNAL_SENSOR_8_UNIT_CHANGED)
+            external_sensor_8_unit_changed_cb(&msg);
+        else if (type == EXTERNAL_SENSOR_5_UNITPS_CHANGED)
+            external_sensor_5_unitps_changed_cb(&msg);
+        else if (type == EXTERNAL_SENSOR_6_UNITPS_CHANGED)
+            external_sensor_6_unitps_changed_cb(&msg);
+        else if (type == EXTERNAL_SENSOR_7_UNITPS_CHANGED)
+            external_sensor_7_unitps_changed_cb(&msg);
+        else if (type == EXTERNAL_SENSOR_8_UNITPS_CHANGED)
+            external_sensor_8_unitps_changed_cb(&msg);
+            
+        // NEXTION-TIMER
         else if (type == NEXTION_UPDATE)
             nextion_update_cb(&msg);
         else

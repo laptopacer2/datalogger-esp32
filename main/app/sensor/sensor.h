@@ -54,3 +54,27 @@ bool dial_big_1_is_enabled();
 float dial_big_1_get_real();
 float dial_big_1_get_realps();
 int dial_big_1_get_decimals();
+
+void dial_big_2_init();
+void dial_big_2_enable();
+void dial_big_2_disable();
+bool dial_big_2_is_enabled();
+float dial_big_2_get_real();
+float dial_big_2_get_realps();
+int dial_big_2_get_decimals();
+
+void dial_big_3_init();
+void dial_big_3_enable();
+void dial_big_3_disable();
+bool dial_big_3_is_enabled();
+float dial_big_3_get_real();
+float dial_big_3_get_realps();
+int dial_big_3_get_decimals();
+
+void dial_big_4_init();
+void dial_big_4_enable();
+void dial_big_4_disable();
+bool dial_big_4_is_enabled();
+float dial_big_4_get_real();
+float dial_big_4_get_realps();
+int dial_big_4_get_decimals();

@@ -144,7 +144,7 @@ dialbig_res_t dialbig_init(dialbig_t *dev)
         return DIALBIG_NO_AVAILABLE_SLOT;
     }
 
-    // CONFIG RATE PIN
+    // CONFIG REQ PIN
     gpio_config_t req_conf = {};
     req_conf.intr_type = GPIO_INTR_DISABLE;
     req_conf.mode = GPIO_MODE_OUTPUT;
@@ -160,7 +160,7 @@ dialbig_res_t dialbig_init(dialbig_t *dev)
     clk_conf.mode = GPIO_MODE_INPUT;
     clk_conf.pin_bit_mask = (1ULL << (dev->clk_pin));
     clk_conf.pull_down_en = 0;
-    clk_conf.pull_up_en = 0;
+    clk_conf.pull_up_en = GPIO_PULLUP_ENABLE;
     gpio_config(&clk_conf);
 
     // CONFIG DATA PIN
@@ -169,7 +169,7 @@ dialbig_res_t dialbig_init(dialbig_t *dev)
     data_conf.mode = GPIO_MODE_INPUT;
     data_conf.pin_bit_mask = (1ULL << (dev->data_pin));
     data_conf.pull_down_en = 0;
-    data_conf.pull_up_en = 0;
+    data_conf.pull_up_en = GPIO_PULLUP_ENABLE;
     gpio_config(&data_conf);
 
     // install gpio isr service

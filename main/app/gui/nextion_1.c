@@ -90,6 +90,21 @@ void code_rcv_1_cb(nextion_cmd_t *cmd)
             SEND_EMPTY_MSG(main_queue, CALIBRATION_SWITCH_5_DISABLED, portMAX_DELAY)
         else if (page == 2 && component_id == 0x22 && event == 0x03)
             SEND_EMPTY_MSG(main_queue, CALIBRATION_SWITCH_5_ENABLED, portMAX_DELAY)
+        // CALIBRATION - SWITCH 6
+        else if (page == 2 && component_id == 0x28 && event == 0x02)
+            SEND_EMPTY_MSG(main_queue, CALIBRATION_SWITCH_6_DISABLED, portMAX_DELAY)
+        else if (page == 2 && component_id == 0x28 && event == 0x03)
+            SEND_EMPTY_MSG(main_queue, CALIBRATION_SWITCH_6_ENABLED, portMAX_DELAY)
+        // CALIBRATION - SWITCH 7
+        else if (page == 2 && component_id == 0x2E && event == 0x02)
+            SEND_EMPTY_MSG(main_queue, CALIBRATION_SWITCH_7_DISABLED, portMAX_DELAY)
+        else if (page == 2 && component_id == 0x2E && event == 0x03)
+            SEND_EMPTY_MSG(main_queue, CALIBRATION_SWITCH_7_ENABLED, portMAX_DELAY)
+        // CALIBRATION - SWITCH 8
+        else if (page == 2 && component_id == 0x34 && event == 0x02)
+            SEND_EMPTY_MSG(main_queue, CALIBRATION_SWITCH_8_DISABLED, portMAX_DELAY)
+        else if (page == 2 && component_id == 0x34 && event == 0x03)
+            SEND_EMPTY_MSG(main_queue, CALIBRATION_SWITCH_8_ENABLED, portMAX_DELAY)
         // UNKNOWN BUTTON
         else
         {
@@ -164,25 +179,11 @@ void nextion_1_home_sensor_1_write_data(float data)
     snprintf(buff, 15, "%.02f", data);
     nextion_write_text_global(&nextion_1, "home", 10, buff);
 }
-
-void nextion_1_home_sensor_1_write_dataps(float dataps)
-{
-    char buff[15] = {0};
-    snprintf(buff, 15, "%.02f", dataps);
-    nextion_write_text_global(&nextion_1, "home", 12, buff);
-}
 void nextion_1_home_sensor_2_write_data(float data)
 {
     char buff[15] = {0};
     snprintf(buff, 15, "%.02f", data);
     nextion_write_text_global(&nextion_1, "home", 16, buff);
-}
-
-void nextion_1_home_sensor_2_write_dataps(float dataps)
-{
-    char buff[15] = {0};
-    snprintf(buff, 15, "%.02f", dataps);
-    nextion_write_text_global(&nextion_1, "home", 18, buff);
 }
 void nextion_1_home_sensor_3_write_data(float data)
 {
@@ -190,27 +191,12 @@ void nextion_1_home_sensor_3_write_data(float data)
     snprintf(buff, 15, "%.02f", data);
     nextion_write_text_global(&nextion_1, "home", 20, buff);
 }
-
-void nextion_1_home_sensor_3_write_dataps(float dataps)
-{
-    char buff[15] = {0};
-    snprintf(buff, 15, "%.02f", dataps);
-    nextion_write_text_global(&nextion_1, "home", 22, buff);
-}
 void nextion_1_home_sensor_4_write_data(float data)
 {
     char buff[15] = {0};
     snprintf(buff, 15, "%.02f", data);
     nextion_write_text_global(&nextion_1, "home", 25, buff);
 }
-
-void nextion_1_home_sensor_4_write_dataps(float dataps)
-{
-    char buff[15] = {0};
-    snprintf(buff, 15, "%.02f", dataps);
-    nextion_write_text_global(&nextion_1, "home", 27, buff);
-}
-
 void nextion_1_home_sensor_5_write_data(float data, int decimals)
 {
     char buff[15] = {0};
@@ -230,7 +216,88 @@ void nextion_1_home_sensor_5_write_data(float data, int decimals)
 
     nextion_write_text_global(&nextion_1, "home", 30, buff);
 }
+void nextion_1_home_sensor_6_write_data(float data, int decimals)
+{
+    char buff[15] = {0};
+    if (decimals == 2)
+    {
+        snprintf(buff, 15, "%.02f", data);
+    }
+    else if (decimals == 4)
+    {
+        snprintf(buff, 15, "%.04f", data);
+    }
+    else
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return;
+    }
 
+    nextion_write_text_global(&nextion_1, "home", 35, buff);
+}
+void nextion_1_home_sensor_7_write_data(float data, int decimals)
+{
+    char buff[15] = {0};
+    if (decimals == 2)
+    {
+        snprintf(buff, 15, "%.02f", data);
+    }
+    else if (decimals == 4)
+    {
+        snprintf(buff, 15, "%.04f", data);
+    }
+    else
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return;
+    }
+
+    nextion_write_text_global(&nextion_1, "home", 40, buff);
+}
+void nextion_1_home_sensor_8_write_data(float data, int decimals)
+{
+    char buff[15] = {0};
+    if (decimals == 2)
+    {
+        snprintf(buff, 15, "%.02f", data);
+    }
+    else if (decimals == 4)
+    {
+        snprintf(buff, 15, "%.04f", data);
+    }
+    else
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return;
+    }
+
+    nextion_write_text_global(&nextion_1, "home", 45, buff);
+}
+
+void nextion_1_home_sensor_1_write_dataps(float dataps)
+{
+    char buff[15] = {0};
+    snprintf(buff, 15, "%.02f", dataps);
+    nextion_write_text_global(&nextion_1, "home", 12, buff);
+}
+void nextion_1_home_sensor_2_write_dataps(float dataps)
+{
+    char buff[15] = {0};
+    snprintf(buff, 15, "%.02f", dataps);
+    nextion_write_text_global(&nextion_1, "home", 18, buff);
+}
+void nextion_1_home_sensor_3_write_dataps(float dataps)
+{
+    char buff[15] = {0};
+    snprintf(buff, 15, "%.02f", dataps);
+    nextion_write_text_global(&nextion_1, "home", 22, buff);
+}
+void nextion_1_home_sensor_4_write_dataps(float dataps)
+{
+    char buff[15] = {0};
+    snprintf(buff, 15, "%.02f", dataps);
+    nextion_write_text_global(&nextion_1, "home", 27, buff);
+}
 void nextion_1_home_sensor_5_write_dataps(float dataps, int decimals)
 {
     char buff[15] = {0};
@@ -249,15 +316,93 @@ void nextion_1_home_sensor_5_write_dataps(float dataps, int decimals)
     }
     nextion_write_text_global(&nextion_1, "home", 32, buff);
 }
+void nextion_1_home_sensor_6_write_dataps(float dataps, int decimals)
+{
+    char buff[15] = {0};
+    if (decimals == 2)
+    {
+        snprintf(buff, 15, "%.02f", dataps);
+    }
+    else if (decimals == 4)
+    {
+        snprintf(buff, 15, "%.04f", dataps);
+    }
+    else
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return;
+    }
+    nextion_write_text_global(&nextion_1, "home", 37, buff);
+}
+void nextion_1_home_sensor_7_write_dataps(float dataps, int decimals)
+{
+    char buff[15] = {0};
+    if (decimals == 2)
+    {
+        snprintf(buff, 15, "%.02f", dataps);
+    }
+    else if (decimals == 4)
+    {
+        snprintf(buff, 15, "%.04f", dataps);
+    }
+    else
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return;
+    }
+    nextion_write_text_global(&nextion_1, "home", 42, buff);
+}
+void nextion_1_home_sensor_8_write_dataps(float dataps, int decimals)
+{
+    char buff[15] = {0};
+    if (decimals == 2)
+    {
+        snprintf(buff, 15, "%.02f", dataps);
+    }
+    else if (decimals == 4)
+    {
+        snprintf(buff, 15, "%.04f", dataps);
+    }
+    else
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return;
+    }
+    nextion_write_text_global(&nextion_1, "home", 47, buff);
+}
 
 void nextion_1_home_sensor_5_write_unit(char *unit)
 {
     nextion_write_text_global(&nextion_1, "home", 31, unit);
 }
+void nextion_1_home_sensor_6_write_unit(char *unit)
+{
+    nextion_write_text_global(&nextion_1, "home", 36, unit);
+}
+void nextion_1_home_sensor_7_write_unit(char *unit)
+{
+    nextion_write_text_global(&nextion_1, "home", 41, unit);
+}
+void nextion_1_home_sensor_8_write_unit(char *unit)
+{
+    nextion_write_text_global(&nextion_1, "home", 46, unit);
+}
 
 void nextion_1_home_sensor_5_write_unitps(char *unit)
 {
     nextion_write_text_global(&nextion_1, "home", 33, unit);
+}
+void nextion_1_home_sensor_6_write_unitps(char *unit)
+{
+    nextion_write_text_global(&nextion_1, "home", 38, unit);
+}
+void nextion_1_home_sensor_7_write_unitps(char *unit)
+{
+    nextion_write_text_global(&nextion_1, "home", 43, unit);
+}
+void nextion_1_home_sensor_8_write_unitps(char *unit)
+{
+    nextion_write_text_global(&nextion_1, "home", 48, unit);
 }
 
 /*
@@ -316,8 +461,74 @@ void nextion_1_calibration_sensor_5_write_data(float data, int decimals)
     }
     nextion_write_text_global(&nextion_1, "calibration", 24, buff);
 }
+void nextion_1_calibration_sensor_6_write_data(float data, int decimals)
+{
+    char buff[15] = {0};
+    if (decimals == 2)
+    {
+        snprintf(buff, 15, "%.02f", data);
+    }
+    else if (decimals == 4)
+    {
+        snprintf(buff, 15, "%.04f", data);
+    }
+    else
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return;
+    }
+    nextion_write_text_global(&nextion_1, "calibration", 28, buff);
+}
+void nextion_1_calibration_sensor_7_write_data(float data, int decimals)
+{
+    char buff[15] = {0};
+    if (decimals == 2)
+    {
+        snprintf(buff, 15, "%.02f", data);
+    }
+    else if (decimals == 4)
+    {
+        snprintf(buff, 15, "%.04f", data);
+    }
+    else
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return;
+    }
+    nextion_write_text_global(&nextion_1, "calibration", 32, buff);
+}
+void nextion_1_calibration_sensor_8_write_data(float data, int decimals)
+{
+    char buff[15] = {0};
+    if (decimals == 2)
+    {
+        snprintf(buff, 15, "%.02f", data);
+    }
+    else if (decimals == 4)
+    {
+        snprintf(buff, 15, "%.04f", data);
+    }
+    else
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return;
+    }
+    nextion_write_text_global(&nextion_1, "calibration", 36, buff);
+}
 
 void nextion_1_calibration_sensor_5_write_unit(char *unit)
 {
     nextion_write_combobox_global(&nextion_1, "calibration", 4, unit);
+}
+void nextion_1_calibration_sensor_6_write_unit(char *unit)
+{
+    nextion_write_combobox_global(&nextion_1, "calibration", 5, unit);
+}
+void nextion_1_calibration_sensor_7_write_unit(char *unit)
+{
+    nextion_write_combobox_global(&nextion_1, "calibration", 6, unit);
+}
+void nextion_1_calibration_sensor_8_write_unit(char *unit)
+{
+    nextion_write_combobox_global(&nextion_1, "calibration", 7, unit);
 }

@@ -45,7 +45,7 @@ void dial_big_data_done_1_cb(dialbig_data_t new_real)
             char *unit = (char *)malloc(10 * sizeof(char));
             snprintf(unit, 10 * sizeof(char), "%s", last_unit == DIALBIG_MM ? "mm" : "inch");
             msg_t msg;
-            msg.type = CALIBRATION_SENSOR_5_UNIT_CHANGED;
+            msg.type = EXTERNAL_SENSOR_5_UNIT_CHANGED;
             msg.content.addr = (void *)unit;
             xQueueSend(main_queue, &msg, portMAX_DELAY);
         }
@@ -54,7 +54,7 @@ void dial_big_data_done_1_cb(dialbig_data_t new_real)
             char *unitps = (char *)malloc(8 * sizeof(char));
             snprintf(unitps, 10 * sizeof(char), "%s", last_unit == DIALBIG_MM ? "mm/s" : "inch/s");
             msg_t msg;
-            msg.type = CALIBRATION_SENSOR_5_UNITPS_CHANGED;
+            msg.type = EXTERNAL_SENSOR_5_UNITPS_CHANGED;
             msg.content.addr = (void *)unitps;
             xQueueSend(main_queue, &msg, portMAX_DELAY);
         }
