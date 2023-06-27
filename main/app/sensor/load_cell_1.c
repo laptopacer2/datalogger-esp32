@@ -8,18 +8,26 @@
 #include "project_typedefs.h"
 #include "project_defines.h"
 #include "esp_log.h"
+#include "calibration.h"
 
 #define TAG "LOAD_CELL_1"
 
+// CALIB PARAMS
+calib_params_t calib;
+
+// RAW READINGS AND TIME
 static float last_rawps = 0.0;
 static int32_t last_raw = 0;
 static int32_t last_ms = 0;
 
+// TARA
 static int32_t tara_raw = 0;
 static float tara_real = 0;
 
+// FLAGS
 static bool is_enabled = false;
 static bool is_initialized = false;
+static bool is_calibrated = false;
 
 void load_cell_data_done_1_cb(uint32_t raw)
 {
@@ -112,4 +120,11 @@ float load_cell_1_get_rawps()
 float load_cell_1_get_realps()
 {
     return last_rawps;
+}
+
+void load_cell_1_get_calib(){
+
+}
+void load_cell_1_set_calib(){
+
 }

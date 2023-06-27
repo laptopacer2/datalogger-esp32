@@ -22,6 +22,8 @@
 
 void main_task_init()
 {
+    nextion_1_init();
+
     load_cell_1_init();
     load_cell_2_init();
     load_cell_3_init();
@@ -32,7 +34,9 @@ void main_task_init()
     dial_big_3_init();
     dial_big_4_init();
 
-    nextion_1_init();
+
+
+    
 }
 
 /*
