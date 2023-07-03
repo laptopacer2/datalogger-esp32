@@ -85,6 +85,46 @@ void main_task(void *arg)
             calibration_switch_8_disabled_cb(&msg);
         else if (type == CALIBRATION_SWITCH_8_ENABLED)
             calibration_switch_8_enabled_cb(&msg);
+        // INPUT CALIB P1
+        else if (type == INPUTCALIBP1_LOADED)
+            inputcalibp1_loaded_cb(&msg);
+        else if (type == INPUTCALIBP1_TYPE_RECEIVED)
+            inputcalibp1_type_received_cb(&msg);
+        else if (type == INPUTCALIBP1_CAPACITY_RECEIVED)
+            inputcalibp1_capacity_received_cb(&msg);
+        else if (type == INPUTCALIBP1_CAPACITY_UNIT_RECEIVED)
+            inputcalibp1_capacity_unit_received_cb(&msg);
+        else if (type == INPUTCALIBP1_SENSIBILITY_RECEIVED)
+            inputcalibp1_sensibility_received_cb(&msg);
+        else if (type == INPUTCALIBP1_SENSIBILITY_UNIT_RECEIVED)
+            inputcalibp1_sensibility_unit_received_cb(&msg);
+        else if (type == INPUTCALIBP1_SENSOR_INDEX_RECEIVED)
+            inputcalibp1_sensor_index_received(&msg);
+        // INPUT CALIB P2
+        else if (type == INPUTCALIBP2_LOADED)
+            inputcalibp2_loaded_cb(&msg);
+        else if (type == INPUTCALIBP2_CALIBRATION_LIMIT_RECEIVED)
+            inputcalibp2_calibration_limit_received_cb(&msg);
+        else if (type == INPUTCALIBP2_CALIBRATION_LIMIT_UNIT_RECEIVED)
+            inputcalibp2_calibration_limit_unit_received_cb(&msg);
+        else if (type == INPUTCALIBP2_LIMIT_ENABLE_RECEIVED)
+            inputcalibp2_limit_enable_receive_cb(&msg);
+        // INPUT CALIB P3
+        else if (type == INPUTCALIBP3_LOADED)
+            inputcalibp3_loaded_cb(&msg);
+        else if (type == INPUTCALIBP3_TABLE_RECEIVED)
+            inputcalibp3_table_received(&msg);
+        else if (type == INPUTCALIBP3_NUM_POINTS_RECEIVED)
+            inputcalibp3_num_points_received(&msg);
+        else if (type == INPUTCALIBP3_ROW_TO_FILL_RECEIVED)
+            inputcalibp3_row_to_fill_received(&msg);
+        // INPUT CALIB P4
+        else if (type == INPUTCALIBP4_LOADED)
+            inputcalibp4_loaded_cb(&msg);
+        else if (type == INPUTCALIBP4_NAME_RECEIVED)
+            inputcalibp4_name_received_cb(&msg);
+        else if (type == INPUTCALIBP4_SAVE_PRESSED)
+            inputcalibp4_save_pressed_cb(&msg);
 
         // EXTERNAL ( SENSORS, ...)
         else if (type == EXTERNAL_SENSOR_5_UNIT_CHANGED)
@@ -103,7 +143,7 @@ void main_task(void *arg)
             external_sensor_7_unitps_changed_cb(&msg);
         else if (type == EXTERNAL_SENSOR_8_UNITPS_CHANGED)
             external_sensor_8_unitps_changed_cb(&msg);
-            
+
         // NEXTION-TIMER
         else if (type == NEXTION_UPDATE)
             nextion_update_cb(&msg);

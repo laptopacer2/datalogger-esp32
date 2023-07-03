@@ -11,15 +11,16 @@
 
 #define TAG "LOAD_CELL_4"
 
-static float last_rawps = 0.0;
+static double last_rawps = 0.0;
 static int32_t last_raw = 0;
 static int32_t last_ms = 0;
 
 static int32_t tara_raw = 0;
-static float tara_real = 0;
+static double tara_real = 0;
 
 static bool is_enabled = false;
 static bool is_initialized = false;
+static bool is_calibrated = false;
 
 void load_cell_data_done_4_cb(uint32_t raw)
 {
@@ -27,7 +28,7 @@ void load_cell_data_done_4_cb(uint32_t raw)
     uint32_t ms = xTaskGetTickCount();
     int32_t delta_raw = (int32_t)raw - last_raw;
     int32_t deltat_ms = (int32_t)ms - last_ms;
-    float rawps = (delta_raw * 1000.0) / deltat_ms;
+    double rawps = (delta_raw * 1000.0) / deltat_ms;
 
     // SAVE VALUES
     last_raw = (int32_t)raw;
@@ -88,28 +89,32 @@ void load_cell_4_set_tara()
 {
     tara_raw = last_raw;
     // todo: calibration
-    tara_real = (float)tara_raw;
+    tara_real = (double)tara_raw;
 }
 void load_cell_4_clear_tara()
 {
     tara_raw = 0;
     tara_real = 0.0;
 }
-float load_cell_4_get_real()
+double load_cell_4_get_real()
 {
     // todo: calibration
-    float last_real = (float)last_raw;
+    double last_real = (double)last_raw;
     return last_real - tara_real;
 }
-float load_cell_4_get_raw()
+double load_cell_4_get_raw()
 {
-    return (float)last_raw;
+    return (double)last_raw;
 }
-float load_cell_4_get_rawps()
+double load_cell_4_get_rawps()
 {
     return last_rawps;
 }
-float load_cell_4_get_realps()
+double load_cell_4_get_realps()
 {
     return last_rawps;
+}
+bool load_cell_4_is_calibrated()
+{
+    return is_calibrated;
 }

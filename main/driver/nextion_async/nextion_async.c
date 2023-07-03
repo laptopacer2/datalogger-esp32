@@ -39,6 +39,7 @@ void nextion_task_i0(void *arg)
         switch (event.type)
         {
         case UART_DATA:
+            /*
             int n = uart_read_bytes(uart_port, dtmp, event.size, portMAX_DELAY);
             if (n != event.size)
             {
@@ -49,6 +50,7 @@ void nextion_task_i0(void *arg)
             // EXECUTE USER CALLBACK
             if (data_rcv_cb)
                 data_rcv_cb(dtmp, n);
+            */
             break;
         case UART_FIFO_OVF:
             uart_flush_input(uart_port);
@@ -85,6 +87,7 @@ void nextion_task_i0(void *arg)
 
             ///// GET NEXTION PATTERN
             bool is_touch_event = ((dtmp[0] == TOUCH_EVENT_ID) && (pattern_len == TOUCH_EVENT_LEN));
+            bool is_custom_event = ((dtmp[0] == CUSTOM_EVENT_ID) && (pattern_len >= 6));
             nextion_cmd_t cmd;
             if (is_touch_event)
             {
@@ -93,6 +96,21 @@ void nextion_task_i0(void *arg)
                 cmd.touch_event.page = dtmp[1];
                 cmd.touch_event.component_id = dtmp[2];
                 cmd.touch_event.event = dtmp[3];
+            }
+            else if (is_custom_event)
+            {
+                cmd.id = CUSTOM_EVENT_ID;
+                cmd.len = pattern_len;
+                cmd.custom_event.page = dtmp[1];
+                cmd.custom_event.component_id = dtmp[2];
+                int data_len = pattern_len - 6; // 3 BYTE PREAMBLE + 3 BYTE ENDED(FF FF FF)
+                cmd.custom_event.data_len = data_len;
+                if (data_len > 0)
+                {
+                    void *data = calloc(data_len + 1, 1); // +1 for null terminated str
+                    memcpy(data, dtmp + 3, data_len);
+                    cmd.custom_event.data = data;
+                }
             }
             else
             {
@@ -137,7 +155,7 @@ nextion_res_t nextion_init(nextion_t *dev)
                         0);
     uart_param_config((dev->uart_num), &uart_config);
     uart_set_pin((dev->uart_num), (dev->uTX_nRX_pin), (dev->uRX_nTX_pin), UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
-    uart_enable_pattern_det_baud_intr((dev->uart_num), NEXTION_PATTERN_CHR, NEXTION_PATTERN_CHR_NUM, 11, 0, 0);
+    uart_enable_pattern_det_baud_intr((dev->uart_num), NEXTION_PATTERN_CHR, NEXTION_PATTERN_CHR_NUM, 11, 0, 0); // 11
     uart_pattern_queue_reset((dev->uart_num), (dev->rx_queue_size));
 
     // CREATE TASK

@@ -49,3 +49,27 @@ void nextion_1_calibration_sensor_5_write_unit(char *unit);
 void nextion_1_calibration_sensor_6_write_unit(char *unit);
 void nextion_1_calibration_sensor_7_write_unit(char *unit);
 void nextion_1_calibration_sensor_8_write_unit(char *unit);
+
+void nextion_1_inputcalibp3_applied0_write(double val, int precision);
+void nextion_1_inputcalibp3_applied1_write(double val, int precision);
+void nextion_1_inputcalibp3_applied2_write(double val, int precision);
+void nextion_1_inputcalibp3_applied3_write(double val, int precision);
+void nextion_1_inputcalibp3_applied4_write(double val, int precision);
+void nextion_1_inputcalibp3_applied5_write(double val, int precision);
+void nextion_1_inputcalibp3_applied6_write(double val, int precision);
+void nextion_1_inputcalibp3_applied7_write(double val, int precision);
+void nextion_1_inputcalibp3_applied8_write(double val, int precision);
+void nextion_1_inputcalibp3_applied9_write(double val, int precision);
+void nextion_1_inputcalibp3_applied10_write(double val, int precision);
+
+void nextion_1_inputcalibp3_adc0_write(double val);
+void nextion_1_inputcalibp3_adc1_write(double val);
+void nextion_1_inputcalibp3_adc2_write(double val);
+void nextion_1_inputcalibp3_adc3_write(double val);
+void nextion_1_inputcalibp3_adc4_write(double val);
+void nextion_1_inputcalibp3_adc5_write(double val);
+void nextion_1_inputcalibp3_adc6_write(double val);
+void nextion_1_inputcalibp3_adc7_write(double val);
+void nextion_1_inputcalibp3_adc8_write(double val);
+void nextion_1_inputcalibp3_adc9_write(double val);
+void nextion_1_inputcalibp3_adc10_write(double val);

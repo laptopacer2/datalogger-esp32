@@ -19,6 +19,7 @@ static int32_t last_ms = 0;
 
 static bool is_enabled = false;
 static bool is_initialized = false;
+static bool is_calibrated = true;
 
 void dial_big_data_done_4_cb(dialbig_data_t new_real)
 {
@@ -120,4 +121,7 @@ float dial_big_4_get_realps()
 }
 int dial_big_4_get_decimals(){
     return last_decimals;
+}
+bool dial_big_4_is_calibrated(){
+    return is_calibrated;
 }

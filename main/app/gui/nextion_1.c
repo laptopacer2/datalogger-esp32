@@ -26,6 +26,7 @@ page_t page = INITIAL_PAGE;
 void data_rcv_1_cb(uint8_t *buffer, int size)
 {
     ESP_LOGW(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+    ESP_LOGI(TAG, "%*s", size, (char *)buffer);
 }
 void code_rcv_1_cb(nextion_cmd_t *cmd)
 {
@@ -59,7 +60,7 @@ void code_rcv_1_cb(nextion_cmd_t *cmd)
             SEND_EMPTY_MSG(main_queue, HOME_TARA_4_DISABLED, portMAX_DELAY)
         else if (page == 0 && component_id == 0x19 && event == 0x04)
             SEND_EMPTY_MSG(main_queue, HOME_TARA_4_ENABLED, portMAX_DELAY)
-        // SYSTEM SETTINGS
+        // SYSTEM SETTINGS LOADED
         else if (page == 1 && component_id == 0x00)
             SEND2FRONT_EMPTY_MSG(main_queue, SYSTEM_SETTINGS_LOADED, portMAX_DELAY)
         // CALIBRATION LOADED
@@ -105,12 +106,76 @@ void code_rcv_1_cb(nextion_cmd_t *cmd)
             SEND_EMPTY_MSG(main_queue, CALIBRATION_SWITCH_8_DISABLED, portMAX_DELAY)
         else if (page == 2 && component_id == 0x34 && event == 0x03)
             SEND_EMPTY_MSG(main_queue, CALIBRATION_SWITCH_8_ENABLED, portMAX_DELAY)
+        // INPUTCALIBP1 LOADED
+        else if (page == 8 && component_id == 0x00)
+            SEND_EMPTY_MSG(main_queue, INPUTCALIBP1_LOADED, portMAX_DELAY)
+        // INPUTCALIBP2 LOADED
+        else if (page == 9 && component_id == 0x00)
+            SEND_EMPTY_MSG(main_queue, INPUTCALIBP2_LOADED, portMAX_DELAY)
+        // INPUTCALIBP3 LOADED
+        else if (page == 10 && component_id == 0x00)
+            SEND_EMPTY_MSG(main_queue, INPUTCALIBP3_LOADED, portMAX_DELAY)
+        // INPUTCALIBP4 LOADED
+        else if (page == 11 && component_id == 0x00)
+            SEND_EMPTY_MSG(main_queue, INPUTCALIBP4_LOADED, portMAX_DELAY)
+        // INPUTCALIBP4 SAVE
+        else if (page == 0x0B && component_id == 0x0A)
+            SEND_EMPTY_MSG(main_queue, INPUTCALIBP4_SAVE_PRESSED, portMAX_DELAY)
         // UNKNOWN BUTTON
         else
         {
             ESP_LOGW(TAG, "file:%s,line:%u", __FILE__, __LINE__);
             ESP_LOGW(TAG, "page:0x%02x || component_id:0x%02x || event:0x%02x", page, component_id, event);
         }
+    }
+    else if (cmd_id == CUSTOM_EVENT_ID)
+    {
+        uint8_t page = cmd->custom_event.page;
+        uint8_t component_id = cmd->custom_event.component_id;
+        void *data = cmd->custom_event.data;
+        int data_len = cmd->custom_event.data_len;
+
+        // INPUTCALIBP1  TYPE RECEIVED
+        if (page == 8 && component_id == 0x10)
+            SEND_ADDR_MSG(main_queue, INPUTCALIBP1_TYPE_RECEIVED, data, data_len, portMAX_DELAY)
+        // INPUTCALIBP1  CAPACITY RECEIVED
+        else if (page == 8 && component_id == 0x09)
+            SEND_ADDR_MSG(main_queue, INPUTCALIBP1_CAPACITY_RECEIVED, data, data_len, portMAX_DELAY)
+        // INPUTCALIBP1  CAPACITY UNIT RECEIVED
+        else if (page == 8 && component_id == 0x0F)
+            SEND_ADDR_MSG(main_queue, INPUTCALIBP1_CAPACITY_UNIT_RECEIVED, data, data_len, portMAX_DELAY)
+        // INPUTCALIBP1  SENSIBILITY RECEIVED
+        else if (page == 8 && component_id == 0x0A)
+            SEND_ADDR_MSG(main_queue, INPUTCALIBP1_SENSIBILITY_RECEIVED, data, data_len, portMAX_DELAY)
+        // INPUTCALIBP1  SENSIBILITY UNIT RECEIVED
+        else if (page == 8 && component_id == 0x0B)
+            SEND_ADDR_MSG(main_queue, INPUTCALIBP1_SENSIBILITY_UNIT_RECEIVED, data, data_len, portMAX_DELAY)
+
+        // INPUTCALIBP1 SENSOR INDEX RECEIVED
+        else if (page == 8 && component_id == 0x13)
+            SEND_ADDR_MSG(main_queue, INPUTCALIBP1_SENSOR_INDEX_RECEIVED, data, data_len, portMAX_DELAY)
+
+        // INPUTCALIBP2 CALIBRATION LIMIT RECEIVED
+        else if (page == 9 && component_id == 0x08)
+            SEND_ADDR_MSG(main_queue, INPUTCALIBP2_CALIBRATION_LIMIT_RECEIVED, data, data_len, portMAX_DELAY)
+        // INPUTCALIBP2  CALIBRATION LIMIT UNIT RECEIVED
+        else if (page == 9 && component_id == 0x14)
+            SEND_ADDR_MSG(main_queue, INPUTCALIBP2_CALIBRATION_LIMIT_UNIT_RECEIVED, data, data_len, portMAX_DELAY)
+        // INPUTCALIBP2  LIMIT ENABLE RECEIVED
+        else if (page == 9 && component_id == 0x0D)
+            SEND_ADDR_MSG(main_queue, INPUTCALIBP2_LIMIT_ENABLE_RECEIVED, data, data_len, portMAX_DELAY)
+        // INPUTCALIBP3 TABLE RECEIVED
+        else if (page == 0x0A && component_id == 0x1C)
+            SEND_ADDR_MSG(main_queue, INPUTCALIBP3_TABLE_RECEIVED, data, data_len, portMAX_DELAY)
+        // INPUTCALIBP3 NUM POINTS RECEIVED
+        else if (page == 0x0A && component_id == 0x32)
+            SEND_ADDR_MSG(main_queue, INPUTCALIBP3_NUM_POINTS_RECEIVED, data, data_len, portMAX_DELAY)
+        // INPUTCALIBP3 ROW TO FILL RECEIVED
+        else if (page == 0x0A && component_id == 0x0C)
+            SEND_ADDR_MSG(main_queue, INPUTCALIBP3_ROW_TO_FILL_RECEIVED, data, data_len, portMAX_DELAY)
+        // INPUTCALIBP4 NAME RECEIVED
+        else if (page == 0x0B && component_id == 0x08)
+            SEND_ADDR_MSG(main_queue, INPUTCALIBP4_NAME_RECEIVED, data, data_len, portMAX_DELAY)
     }
     else
     {
@@ -531,4 +596,149 @@ void nextion_1_calibration_sensor_7_write_unit(char *unit)
 void nextion_1_calibration_sensor_8_write_unit(char *unit)
 {
     nextion_write_combobox_global(&nextion_1, "calibration", 7, unit);
+}
+
+/*
+██╗███╗   ██╗██████╗ ██╗   ██╗████████╗     ██████╗ █████╗ ██╗     ██╗██████╗     ██████╗ ██████╗
+██║████╗  ██║██╔══██╗██║   ██║╚══██╔══╝    ██╔════╝██╔══██╗██║     ██║██╔══██╗    ██╔══██╗╚════██╗
+██║██╔██╗ ██║██████╔╝██║   ██║   ██║       ██║     ███████║██║     ██║██████╔╝    ██████╔╝ █████╔╝
+██║██║╚██╗██║██╔═══╝ ██║   ██║   ██║       ██║     ██╔══██║██║     ██║██╔══██╗    ██╔═══╝  ╚═══██╗
+██║██║ ╚████║██║     ╚██████╔╝   ██║       ╚██████╗██║  ██║███████╗██║██████╔╝    ██║     ██████╔╝
+╚═╝╚═╝  ╚═══╝╚═╝      ╚═════╝    ╚═╝        ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝╚═════╝     ╚═╝     ╚═════╝
+
+*/
+
+void nextion_1_inputcalibp3_applied0_write(double val, int precision)
+{
+    char buffer[15 + 1];
+    snprintf(buffer, sizeof(buffer), "%.*lf", precision, val);
+    nextion_write_text_global(&nextion_1, "inputcalibp3", 21, buffer);
+}
+void nextion_1_inputcalibp3_applied1_write(double val, int precision)
+{
+    char buffer[15 + 1];
+    snprintf(buffer, sizeof(buffer), "%.*lf", precision, val);
+    nextion_write_text_global(&nextion_1, "inputcalibp3", 22, buffer);
+}
+void nextion_1_inputcalibp3_applied2_write(double val, int precision)
+{
+    char buffer[15 + 1];
+    snprintf(buffer, sizeof(buffer), "%.*lf", precision, val);
+    nextion_write_text_global(&nextion_1, "inputcalibp3", 23, buffer);
+}
+void nextion_1_inputcalibp3_applied3_write(double val, int precision)
+{
+    char buffer[15 + 1];
+    snprintf(buffer, sizeof(buffer), "%.*lf", precision, val);
+    nextion_write_text_global(&nextion_1, "inputcalibp3", 24, buffer);
+}
+void nextion_1_inputcalibp3_applied4_write(double val, int precision)
+{
+    char buffer[15 + 1];
+    snprintf(buffer, sizeof(buffer), "%.*lf", precision, val);
+    nextion_write_text_global(&nextion_1, "inputcalibp3", 25, buffer);
+}
+void nextion_1_inputcalibp3_applied5_write(double val, int precision)
+{
+    char buffer[15 + 1];
+    snprintf(buffer, sizeof(buffer), "%.*lf", precision, val);
+    nextion_write_text_global(&nextion_1, "inputcalibp3", 26, buffer);
+}
+void nextion_1_inputcalibp3_applied6_write(double val, int precision)
+{
+    char buffer[15 + 1];
+    snprintf(buffer, sizeof(buffer), "%.*lf", precision, val);
+    nextion_write_text_global(&nextion_1, "inputcalibp3", 27, buffer);
+}
+void nextion_1_inputcalibp3_applied7_write(double val, int precision)
+{
+    char buffer[15 + 1];
+    snprintf(buffer, sizeof(buffer), "%.*lf", precision, val);
+    nextion_write_text_global(&nextion_1, "inputcalibp3", 28, buffer);
+}
+void nextion_1_inputcalibp3_applied8_write(double val, int precision)
+{
+    char buffer[15 + 1];
+    snprintf(buffer, sizeof(buffer), "%.*lf", precision, val);
+    nextion_write_text_global(&nextion_1, "inputcalibp3", 29, buffer);
+}
+void nextion_1_inputcalibp3_applied9_write(double val, int precision)
+{
+    char buffer[15 + 1];
+    snprintf(buffer, sizeof(buffer), "%.*lf", precision, val);
+    nextion_write_text_global(&nextion_1, "inputcalibp3", 30, buffer);
+}
+void nextion_1_inputcalibp3_applied10_write(double val, int precision)
+{
+    char buffer[15 + 1];
+    snprintf(buffer, sizeof(buffer), "%.*lf", precision, val);
+    nextion_write_text_global(&nextion_1, "inputcalibp3", 31, buffer);
+}
+
+
+void nextion_1_inputcalibp3_adc0_write(double val)
+{
+    char buffer[15 + 1];
+    snprintf(buffer, sizeof(buffer), "%.0f", val);
+    nextion_write_text_global(&nextion_1, "inputcalibp3", 32, buffer);
+}
+void nextion_1_inputcalibp3_adc1_write(double val)
+{
+    char buffer[15 + 1];
+    snprintf(buffer, sizeof(buffer), "%.0f", val);
+    nextion_write_text_global(&nextion_1, "inputcalibp3", 33, buffer);
+}
+void nextion_1_inputcalibp3_adc2_write(double val)
+{
+    char buffer[15 + 1];
+    snprintf(buffer, sizeof(buffer), "%.0f", val);
+    nextion_write_text_global(&nextion_1, "inputcalibp3", 34, buffer);
+}
+void nextion_1_inputcalibp3_adc3_write(double val)
+{
+    char buffer[15 + 1];
+    snprintf(buffer, sizeof(buffer), "%.0f", val);
+    nextion_write_text_global(&nextion_1, "inputcalibp3", 35, buffer);
+}
+void nextion_1_inputcalibp3_adc4_write(double val)
+{
+    char buffer[15 + 1];
+    snprintf(buffer, sizeof(buffer), "%.0f", val);
+    nextion_write_text_global(&nextion_1, "inputcalibp3", 36, buffer);
+}
+void nextion_1_inputcalibp3_adc5_write(double val)
+{
+    char buffer[15 + 1];
+    snprintf(buffer, sizeof(buffer), "%.0f", val);
+    nextion_write_text_global(&nextion_1, "inputcalibp3", 37, buffer);
+}
+void nextion_1_inputcalibp3_adc6_write(double val)
+{
+    char buffer[15 + 1];
+    snprintf(buffer, sizeof(buffer), "%.0f", val);
+    nextion_write_text_global(&nextion_1, "inputcalibp3", 38, buffer);
+}
+void nextion_1_inputcalibp3_adc7_write(double val)
+{
+    char buffer[15 + 1];
+    snprintf(buffer, sizeof(buffer), "%.0f", val);
+    nextion_write_text_global(&nextion_1, "inputcalibp3", 39, buffer);
+}
+void nextion_1_inputcalibp3_adc8_write(double val)
+{
+    char buffer[15 + 1];
+    snprintf(buffer, sizeof(buffer), "%.0f", val);
+    nextion_write_text_global(&nextion_1, "inputcalibp3", 40, buffer);
+}
+void nextion_1_inputcalibp3_adc9_write(double val)
+{
+    char buffer[15 + 1];
+    snprintf(buffer, sizeof(buffer), "%.0f", val);
+    nextion_write_text_global(&nextion_1, "inputcalibp3", 41, buffer);
+}
+void nextion_1_inputcalibp3_adc10_write(double val)
+{
+    char buffer[15 + 1];
+    snprintf(buffer, sizeof(buffer), "%.0f", val);
+    nextion_write_text_global(&nextion_1, "inputcalibp3", 42, buffer);
 }

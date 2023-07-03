@@ -26,6 +26,7 @@ typedef enum
     NEXTION_STARTUP_ID = 0x00,
     SERIAL_BUFFER_OVERFLOW_ID = 0x24,
     TOUCH_EVENT_ID = 0x65,
+    CUSTOM_EVENT_ID = 0X72, 
     CMD_ID_MAX = 0XFF,
 } nextion_cmd_id_t;
 
@@ -49,6 +50,13 @@ typedef struct
             uint8_t component_id;
             uint8_t event;
         } touch_event;
+        struct
+        {
+            uint8_t page;
+            uint8_t component_id;
+            void *data; // dynamic if data_len > 0
+            int data_len;
+        } custom_event;
     };
 
 } nextion_cmd_t;
@@ -62,7 +70,7 @@ typedef struct
     // RUN TIME DEFINE
     QueueHandle_t rx_queue;
     // USER DEFINE
-    int rx_queue_size; //  usually 10
+    int rx_queue_size;    //  usually 10
     int uart_buffer_size; // usually 1024 bytes
     gpio_num_t uRX_nTX_pin;
     gpio_num_t uTX_nRX_pin;
@@ -73,5 +81,5 @@ typedef struct
 } nextion_t;
 
 nextion_res_t nextion_init(nextion_t *dev);
-nextion_res_t nextion_write_text_global(nextion_t *dev,char* global, int text_index,  char* content);
+nextion_res_t nextion_write_text_global(nextion_t *dev, char *global, int text_index, char *content);
 nextion_res_t nextion_write_combobox_global(nextion_t *dev, char *global, int combobox_index, char *content);
