@@ -85,6 +85,14 @@ void main_task(void *arg)
             calibration_switch_8_disabled_cb(&msg);
         else if (type == CALIBRATION_SWITCH_8_ENABLED)
             calibration_switch_8_enabled_cb(&msg);
+        else if(type ==CALIBRATION_SENSOR_1_UNIT_CHANGED)
+            calibration_sensor_1_unit_changed_cb(&msg);
+        else if(type ==CALIBRATION_SENSOR_2_UNIT_CHANGED)
+            calibration_sensor_2_unit_changed_cb(&msg);
+        else if(type ==CALIBRATION_SENSOR_3_UNIT_CHANGED)
+            calibration_sensor_3_unit_changed_cb(&msg);
+        else if(type ==CALIBRATION_SENSOR_4_UNIT_CHANGED)
+            calibration_sensor_4_unit_changed_cb(&msg);
         // INPUT CALIB P1
         else if (type == INPUTCALIBP1_LOADED)
             inputcalibp1_loaded_cb(&msg);
@@ -125,6 +133,9 @@ void main_task(void *arg)
             inputcalibp4_name_received_cb(&msg);
         else if (type == INPUTCALIBP4_SAVE_PRESSED)
             inputcalibp4_save_pressed_cb(&msg);
+        // NUMPAD POPUP 
+        else if(type == NUMPAD_POPUP_LOADED)
+            numpad_popup_loaded_cb(&msg);
 
         // EXTERNAL ( SENSORS, ...)
         else if (type == EXTERNAL_SENSOR_5_UNIT_CHANGED)

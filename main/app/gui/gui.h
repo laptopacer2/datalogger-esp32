@@ -20,21 +20,33 @@ void nextion_1_home_sensor_1_write_dataps(float dataps);
 void nextion_1_home_sensor_2_write_dataps(float dataps);
 void nextion_1_home_sensor_3_write_dataps(float dataps);
 void nextion_1_home_sensor_4_write_dataps(float dataps);
-
 void nextion_1_home_sensor_5_write_dataps(float dataps, int decimals);
 void nextion_1_home_sensor_6_write_dataps(float dataps, int decimals);
 void nextion_1_home_sensor_7_write_dataps(float dataps, int decimals);
 void nextion_1_home_sensor_8_write_dataps(float dataps, int decimals);
 
+void nextion_1_home_sensor_1_write_unit(char* unit);
+void nextion_1_home_sensor_2_write_unit(char* unit);
+void nextion_1_home_sensor_3_write_unit(char* unit);
+void nextion_1_home_sensor_4_write_unit(char* unit);
 void nextion_1_home_sensor_5_write_unit(char *unit);
 void nextion_1_home_sensor_6_write_unit(char *unit);
 void nextion_1_home_sensor_7_write_unit(char *unit);
 void nextion_1_home_sensor_8_write_unit(char *unit);
 
-void nextion_1_home_sensor_5_write_unitps(char *unit);
-void nextion_1_home_sensor_6_write_unitps(char *unit);
-void nextion_1_home_sensor_7_write_unitps(char *unit);
-void nextion_1_home_sensor_8_write_unitps(char *unit);
+void nextion_1_home_sensor_1_write_unitps(char* unitps);
+void nextion_1_home_sensor_2_write_unitps(char* unitps);
+void nextion_1_home_sensor_3_write_unitps(char* unitps);
+void nextion_1_home_sensor_4_write_unitps(char* unitps);
+void nextion_1_home_sensor_5_write_unitps(char *unitps);
+void nextion_1_home_sensor_6_write_unitps(char *unitps);
+void nextion_1_home_sensor_7_write_unitps(char *unitps);
+void nextion_1_home_sensor_8_write_unitps(char *unitps);
+
+void nextion_1_home_sensor_1_write_name(char *name);
+void nextion_1_home_sensor_2_write_name(char *name);
+void nextion_1_home_sensor_3_write_name(char *name);
+void nextion_1_home_sensor_4_write_name(char *name);
 
 void nextion_1_calibration_sensor_1_write_data(float data);
 void nextion_1_calibration_sensor_2_write_data(float data);
@@ -49,6 +61,49 @@ void nextion_1_calibration_sensor_5_write_unit(char *unit);
 void nextion_1_calibration_sensor_6_write_unit(char *unit);
 void nextion_1_calibration_sensor_7_write_unit(char *unit);
 void nextion_1_calibration_sensor_8_write_unit(char *unit);
+
+void nextion_1_calibration_sensor_1_write_name(char *name);
+void nextion_1_calibration_sensor_2_write_name(char *name);
+void nextion_1_calibration_sensor_3_write_name(char *name);
+void nextion_1_calibration_sensor_4_write_name(char *name);
+
+void nextion_1_calibration_sensor_1_write_limit(char *unit, double limit, int decimals);
+void nextion_1_calibration_sensor_2_write_limit(char *unit, double limit, int decimals);
+void nextion_1_calibration_sensor_3_write_limit(char *unit, double limit, int decimals);
+void nextion_1_calibration_sensor_4_write_limit(char *unit, double limit, int decimals);
+
+void nextion_1_calibration_sensor_1_combobox_set_path(char *path);
+void nextion_1_calibration_sensor_2_combobox_set_path(char *path);
+void nextion_1_calibration_sensor_3_combobox_set_path(char *path);
+void nextion_1_calibration_sensor_4_combobox_set_path(char *path);
+
+void nextion_1_calibration_sensor_1_combobox_set_val(int32_t val);
+void nextion_1_calibration_sensor_2_combobox_set_val(int32_t val);
+void nextion_1_calibration_sensor_3_combobox_set_val(int32_t val);
+void nextion_1_calibration_sensor_4_combobox_set_val(int32_t val);
+
+void nextion_1_calibration_sensor_1_combobox_set_txt(char *txt);
+void nextion_1_calibration_sensor_2_combobox_set_txt(char *txt);
+void nextion_1_calibration_sensor_3_combobox_set_txt(char *txt);
+void nextion_1_calibration_sensor_4_combobox_set_txt(char *txt);
+
+void nextion_1_calibration_sensor_1_checkbox_set_val(bool val);
+void nextion_1_calibration_sensor_2_checkbox_set_val(bool val);
+void nextion_1_calibration_sensor_3_checkbox_set_val(bool val);
+void nextion_1_calibration_sensor_4_checkbox_set_val(bool val);
+void nextion_1_calibration_sensor_5_checkbox_set_val(bool val);
+void nextion_1_calibration_sensor_6_checkbox_set_val(bool val);
+void nextion_1_calibration_sensor_7_checkbox_set_val(bool val);
+void nextion_1_calibration_sensor_8_checkbox_set_val(bool val);
+
+void nextion_1_calibration_sensor_1_switch_set_val(bool val);
+void nextion_1_calibration_sensor_2_switch_set_val(bool val);
+void nextion_1_calibration_sensor_3_switch_set_val(bool val);
+void nextion_1_calibration_sensor_4_switch_set_val(bool val);
+void nextion_1_calibration_sensor_5_switch_set_val(bool val);
+void nextion_1_calibration_sensor_6_switch_set_val(bool val);
+void nextion_1_calibration_sensor_7_switch_set_val(bool val);
+void nextion_1_calibration_sensor_8_switch_set_val(bool val);
 
 void nextion_1_inputcalibp3_applied0_write(double val, int precision);
 void nextion_1_inputcalibp3_applied1_write(double val, int precision);
@@ -73,3 +128,6 @@ void nextion_1_inputcalibp3_adc7_write(double val);
 void nextion_1_inputcalibp3_adc8_write(double val);
 void nextion_1_inputcalibp3_adc9_write(double val);
 void nextion_1_inputcalibp3_adc10_write(double val);
+
+void nextion_1_inputcalibp4_result_write(char* content);
+void nextion_1_inputcalibp4_result_set_txt_color(uint32_t color);

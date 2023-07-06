@@ -35,3 +35,25 @@
 #define DIALBIG_4_DATA_PIN (38)
 #define DIALBIG_4_CLK_PIN (39)
 #define DIALBIG_4_REQ_PIN (40)
+
+#define CALIB_NAME_LEN_MAX (30) // without null end
+
+#define NVS_NAMESPACE "storage"
+#define NVS_KEY_SENSOR_1_CALIB "s1calib"
+#define NVS_KEY_SENSOR_2_CALIB "s2calib"
+#define NVS_KEY_SENSOR_3_CALIB "s3calib"
+#define NVS_KEY_SENSOR_4_CALIB "s4calib"
+#define NVS_KEY_SENSOR_5_CALIB "s5calib"
+#define NVS_KEY_SENSOR_6_CALIB "s6calib"
+#define NVS_KEY_SENSOR_7_CALIB "s7calib"
+#define NVS_KEY_SENSOR_8_CALIB "s8calib"
+
+#define NVS_KEY_SENSOR_1_CONFIG "s1cfg"
+#define NVS_KEY_SENSOR_2_CONFIG "s2cfg"
+#define NVS_KEY_SENSOR_3_CONFIG "s3cfg"
+#define NVS_KEY_SENSOR_4_CONFIG "s4cfg"
+#define NVS_KEY_SENSOR_5_CONFIG "s5cfg"
+#define NVS_KEY_SENSOR_6_CONFIG "s6cfg"
+#define NVS_KEY_SENSOR_7_CONFIG "s7cfg"
+#define NVS_KEY_SENSOR_8_CONFIG "s8cfg"
+

@@ -83,3 +83,9 @@ typedef struct
 nextion_res_t nextion_init(nextion_t *dev);
 nextion_res_t nextion_write_text_global(nextion_t *dev, char *global, int text_index, char *content);
 nextion_res_t nextion_write_combobox_global(nextion_t *dev, char *global, int combobox_index, char *content);
+nextion_res_t nextion_set_path_global(nextion_t *dev, char *global, char *obj, char *path);
+nextion_res_t nextion_set_pco_global(nextion_t *dev, char *global, char *obj, uint32_t txt_color);
+nextion_res_t nextion_set_val_global(nextion_t *dev, char *global, char *obj, int32_t val);
+nextion_res_t nextion_set_txt_global(nextion_t *dev, char *global, char *obj, char *txt);
+
+

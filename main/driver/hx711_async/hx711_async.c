@@ -97,7 +97,7 @@ void IRAM_ATTR hx711_global_isr(void *arg)
     xTimerPendFunctionCallFromISR(hx711_pendfunc, arg, 0, &xHigherPriorityTaskWoken);
 
     // FORCE CONTEXT SWITCH TO TIMER TASK(PRIO 25 on MENUCONFIG)
-    //portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
 hx711_res_t hx711_init(hx711_t *dev)

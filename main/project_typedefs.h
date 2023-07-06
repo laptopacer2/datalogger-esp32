@@ -31,6 +31,11 @@ typedef enum
     CALIBRATION_SWITCH_7_DISABLED,
     CALIBRATION_SWITCH_8_ENABLED,
     CALIBRATION_SWITCH_8_DISABLED,
+    CALIBRATION_SENSOR_1_UNIT_CHANGED,
+    CALIBRATION_SENSOR_2_UNIT_CHANGED,
+    CALIBRATION_SENSOR_3_UNIT_CHANGED,
+    CALIBRATION_SENSOR_4_UNIT_CHANGED,
+
     INPUTCALIBP1_LOADED,
     INPUTCALIBP1_TYPE_RECEIVED,
     INPUTCALIBP1_CAPACITY_RECEIVED,
@@ -49,6 +54,8 @@ typedef enum
     INPUTCALIBP4_LOADED,
     INPUTCALIBP4_NAME_RECEIVED,
     INPUTCALIBP4_SAVE_PRESSED,
+
+    NUMPAD_POPUP_LOADED,
 
     EXTERNAL_SENSOR_5_UNIT_CHANGED,
     EXTERNAL_SENSOR_6_UNIT_CHANGED,
@@ -73,13 +80,8 @@ typedef enum
     INPUTCALIBP2,
     INPUTCALIBP3,
     INPUTCALIBP4,
-
+    NUMPAD_POPUP,
 } page_t;
-
-typedef struct
-{
-    page_t page;
-} page_status_t;
 
 typedef struct
 {
@@ -93,55 +95,3 @@ typedef struct
     } content;
     int size;
 } msg_t;
-
-typedef enum
-{
-    DISPLACEMENT,
-    LOAD,
-    PRESSURE,
-    VOLUME,
-    SENSOR_TYPE_MAX,
-} sensor_type_t;
-typedef enum
-{
-    DISPLACEMENT_UNIT_CM,
-    DISPLACEMENT_UNIT_IN,
-    DISPLACEMENT_UNIT_MM,
-    DISPLACEMENT_UNIT_MAX,
-} sensor_displacement_unit_t;
-typedef enum
-{
-    LOAD_UNIT_KN,
-    LOAD_UNIT_LBF,
-    LOAD_UNIT_N,
-    LOAD_UNIT_KGF,
-    LOAD_UNIT_MAX,
-} sensor_load_unit_t;
-typedef enum
-{
-    PRESSURE_UNIT_KPA,
-    PRESSURE_UNIT_PSI,
-    PRESSURE_UNIT_KSF,
-    PRESSURE_UNIT_MPA,
-    PRESSURE_UNIT_KGF_CM2,
-    PRESSURE_UNIT_MAX,
-} sensor_pressure_unit_t;
-typedef enum
-{
-    VOLUME_UNIT_CM3,
-    VOLUME_UNIT_IN3,
-    VOLUME_UNIT_MAX,
-} sensor_volume_unit_t;
-typedef union
-{
-    sensor_displacement_unit_t displacement_unit;
-    sensor_load_unit_t load_unit;
-    sensor_pressure_unit_t pressure_unit;
-    sensor_volume_unit_t volume_unit;
-} sensor_data_unit_t;
-typedef enum
-{
-    SENSIBILITY_UNIT_MV_V,
-    SENSIBILITY_UNIT_V_V,
-    SENSIBILITY_UNIT_MAX,
-} sensor_sensibility_unit_t;

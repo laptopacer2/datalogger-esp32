@@ -121,7 +121,10 @@ void code_rcv_1_cb(nextion_cmd_t *cmd)
         // INPUTCALIBP4 SAVE
         else if (page == 0x0B && component_id == 0x0A)
             SEND_EMPTY_MSG(main_queue, INPUTCALIBP4_SAVE_PRESSED, portMAX_DELAY)
-        // UNKNOWN BUTTON
+        // NUMPAP POPUP LOADED
+        else if (page == 0x03 && component_id == 0x00)
+            SEND_EMPTY_MSG(main_queue, NUMPAD_POPUP_LOADED, portMAX_DELAY)
+        // UNKNOWN TOUCH EVENT
         else
         {
             ESP_LOGW(TAG, "file:%s,line:%u", __FILE__, __LINE__);
@@ -135,8 +138,20 @@ void code_rcv_1_cb(nextion_cmd_t *cmd)
         void *data = cmd->custom_event.data;
         int data_len = cmd->custom_event.data_len;
 
+        // CALIBRATION SENSOR 1 UNIT CHANGED
+        if (page == 2 && component_id == 0x4D)
+            SEND_ADDR_MSG(main_queue, CALIBRATION_SENSOR_1_UNIT_CHANGED, data, data_len, portMAX_DELAY)
+        // CALIBRATION SENSOR 2 UNIT CHANGED
+        else if (page == 2 && component_id == 0x4C)
+            SEND_ADDR_MSG(main_queue, CALIBRATION_SENSOR_2_UNIT_CHANGED, data, data_len, portMAX_DELAY)
+        // CALIBRATION SENSOR 3  UNIT CHANGED
+        else if (page == 2 && component_id == 0x4B)
+            SEND_ADDR_MSG(main_queue, CALIBRATION_SENSOR_3_UNIT_CHANGED, data, data_len, portMAX_DELAY)
+        // CALIBRATION SENSOR 4  UNIT CHANGED
+        else if (page == 2 && component_id == 0x4A)
+            SEND_ADDR_MSG(main_queue, CALIBRATION_SENSOR_4_UNIT_CHANGED, data, data_len, portMAX_DELAY)
         // INPUTCALIBP1  TYPE RECEIVED
-        if (page == 8 && component_id == 0x10)
+        else if (page == 8 && component_id == 0x10)
             SEND_ADDR_MSG(main_queue, INPUTCALIBP1_TYPE_RECEIVED, data, data_len, portMAX_DELAY)
         // INPUTCALIBP1  CAPACITY RECEIVED
         else if (page == 8 && component_id == 0x09)
@@ -176,6 +191,12 @@ void code_rcv_1_cb(nextion_cmd_t *cmd)
         // INPUTCALIBP4 NAME RECEIVED
         else if (page == 0x0B && component_id == 0x08)
             SEND_ADDR_MSG(main_queue, INPUTCALIBP4_NAME_RECEIVED, data, data_len, portMAX_DELAY)
+        // UNKNOWN CUSTOM EVENT
+        else
+        {
+            ESP_LOGW(TAG, "file:%s,line:%u", __FILE__, __LINE__);
+            ESP_LOGW(TAG, "page:0x%02x || component_id:0x%02x || data:%s", page, component_id, (char *)data);
+        }
     }
     else
     {
@@ -238,6 +259,7 @@ page_t nextion_1_get_page()
 
 */
 
+// WRITE DATA
 void nextion_1_home_sensor_1_write_data(float data)
 {
     char buff[15] = {0};
@@ -339,6 +361,7 @@ void nextion_1_home_sensor_8_write_data(float data, int decimals)
     nextion_write_text_global(&nextion_1, "home", 45, buff);
 }
 
+// WRITE DATAPS
 void nextion_1_home_sensor_1_write_dataps(float dataps)
 {
     char buff[15] = {0};
@@ -436,6 +459,24 @@ void nextion_1_home_sensor_8_write_dataps(float dataps, int decimals)
     nextion_write_text_global(&nextion_1, "home", 47, buff);
 }
 
+// WRITE UNIT
+void nextion_1_home_sensor_1_write_unit(char *unit)
+{
+    nextion_write_text_global(&nextion_1, "home", 11, unit);
+}
+void nextion_1_home_sensor_2_write_unit(char *unit)
+{
+    nextion_write_text_global(&nextion_1, "home", 17, unit);
+}
+void nextion_1_home_sensor_3_write_unit(char *unit)
+{
+    nextion_write_text_global(&nextion_1, "home", 21, unit);
+}
+void nextion_1_home_sensor_4_write_unit(char *unit)
+{
+    nextion_write_text_global(&nextion_1, "home", 26, unit);
+}
+
 void nextion_1_home_sensor_5_write_unit(char *unit)
 {
     nextion_write_text_global(&nextion_1, "home", 31, unit);
@@ -453,21 +494,57 @@ void nextion_1_home_sensor_8_write_unit(char *unit)
     nextion_write_text_global(&nextion_1, "home", 46, unit);
 }
 
-void nextion_1_home_sensor_5_write_unitps(char *unit)
+// WRITE UNITPS
+void nextion_1_home_sensor_1_write_unitps(char *unitps)
 {
-    nextion_write_text_global(&nextion_1, "home", 33, unit);
+    nextion_write_text_global(&nextion_1, "home", 13, unitps);
 }
-void nextion_1_home_sensor_6_write_unitps(char *unit)
+void nextion_1_home_sensor_2_write_unitps(char *unitps)
 {
-    nextion_write_text_global(&nextion_1, "home", 38, unit);
+    nextion_write_text_global(&nextion_1, "home", 19, unitps);
 }
-void nextion_1_home_sensor_7_write_unitps(char *unit)
+void nextion_1_home_sensor_3_write_unitps(char *unitps)
 {
-    nextion_write_text_global(&nextion_1, "home", 43, unit);
+    nextion_write_text_global(&nextion_1, "home", 23, unitps);
 }
-void nextion_1_home_sensor_8_write_unitps(char *unit)
+void nextion_1_home_sensor_4_write_unitps(char *unitps)
 {
-    nextion_write_text_global(&nextion_1, "home", 48, unit);
+    nextion_write_text_global(&nextion_1, "home", 28, unitps);
+}
+
+void nextion_1_home_sensor_5_write_unitps(char *unitps)
+{
+    nextion_write_text_global(&nextion_1, "home", 33, unitps);
+}
+void nextion_1_home_sensor_6_write_unitps(char *unitps)
+{
+    nextion_write_text_global(&nextion_1, "home", 38, unitps);
+}
+void nextion_1_home_sensor_7_write_unitps(char *unitps)
+{
+    nextion_write_text_global(&nextion_1, "home", 43, unitps);
+}
+void nextion_1_home_sensor_8_write_unitps(char *unitps)
+{
+    nextion_write_text_global(&nextion_1, "home", 48, unitps);
+}
+
+// WRITE NAME
+void nextion_1_home_sensor_1_write_name(char *name)
+{
+    nextion_write_text_global(&nextion_1, "home", 1, name);
+}
+void nextion_1_home_sensor_2_write_name(char *name)
+{
+    nextion_write_text_global(&nextion_1, "home", 14, name);
+}
+void nextion_1_home_sensor_3_write_name(char *name)
+{
+    nextion_write_text_global(&nextion_1, "home", 2, name);
+}
+void nextion_1_home_sensor_4_write_name(char *name)
+{
+    nextion_write_text_global(&nextion_1, "home", 4, name);
 }
 
 /*
@@ -480,6 +557,7 @@ void nextion_1_home_sensor_8_write_unitps(char *unit)
 
 */
 
+// WRITE DATA
 void nextion_1_calibration_sensor_1_write_data(float data)
 {
     char buff[15] = {0};
@@ -581,6 +659,7 @@ void nextion_1_calibration_sensor_8_write_data(float data, int decimals)
     nextion_write_text_global(&nextion_1, "calibration", 36, buff);
 }
 
+// WRITE UNIT
 void nextion_1_calibration_sensor_5_write_unit(char *unit)
 {
     nextion_write_combobox_global(&nextion_1, "calibration", 4, unit);
@@ -596,6 +675,172 @@ void nextion_1_calibration_sensor_7_write_unit(char *unit)
 void nextion_1_calibration_sensor_8_write_unit(char *unit)
 {
     nextion_write_combobox_global(&nextion_1, "calibration", 7, unit);
+}
+
+// WRITE NAME
+void nextion_1_calibration_sensor_1_write_name(char *name)
+{
+    nextion_write_text_global(&nextion_1, "calibration", 0, name);
+}
+void nextion_1_calibration_sensor_2_write_name(char *name)
+{
+    nextion_write_text_global(&nextion_1, "calibration", 10, name);
+}
+void nextion_1_calibration_sensor_3_write_name(char *name)
+{
+    nextion_write_text_global(&nextion_1, "calibration", 14, name);
+}
+void nextion_1_calibration_sensor_4_write_name(char *name)
+{
+    nextion_write_text_global(&nextion_1, "calibration", 18, name);
+}
+
+// WRITE LIMIT
+void nextion_1_calibration_sensor_1_write_limit(char *unit, double limit, int decimals)
+{
+    char buff[30];
+    snprintf(buff, sizeof(buff), "%.*f - %.*lf %s", decimals, 0.0, decimals, limit, unit);
+    nextion_write_text_global(&nextion_1, "calibration", 1, buff);
+}
+void nextion_1_calibration_sensor_2_write_limit(char *unit, double limit, int decimals)
+{
+    char buff[30];
+    snprintf(buff, sizeof(buff), "%.*f - %.*lf %s", decimals, 0.0, decimals, limit, unit);
+    nextion_write_text_global(&nextion_1, "calibration", 11, buff);
+}
+void nextion_1_calibration_sensor_3_write_limit(char *unit, double limit, int decimals)
+{
+    char buff[30];
+    snprintf(buff, sizeof(buff), "%.*f - %.*lf %s", decimals, 0.0, decimals, limit, unit);
+    nextion_write_text_global(&nextion_1, "calibration", 15, buff);
+}
+void nextion_1_calibration_sensor_4_write_limit(char *unit, double limit, int decimals)
+{
+    char buff[30];
+    snprintf(buff, sizeof(buff), "%.*f - %.*lf %s", decimals, 0.0, decimals, limit, unit);
+    nextion_write_text_global(&nextion_1, "calibration", 19, buff);
+}
+
+// WRITE COMBOBOX PATH
+void nextion_1_calibration_sensor_1_combobox_set_path(char *path)
+{
+    nextion_set_path_global(&nextion_1, "calibration", "cb0", path);
+}
+void nextion_1_calibration_sensor_2_combobox_set_path(char *path)
+{
+    nextion_set_path_global(&nextion_1, "calibration", "cb1", path);
+}
+void nextion_1_calibration_sensor_3_combobox_set_path(char *path)
+{
+    nextion_set_path_global(&nextion_1, "calibration", "cb2", path);
+}
+void nextion_1_calibration_sensor_4_combobox_set_path(char *path)
+{
+    nextion_set_path_global(&nextion_1, "calibration", "cb3", path);
+}
+
+// WRITE COMBOBOX VAL
+void nextion_1_calibration_sensor_1_combobox_set_val(int32_t val)
+{
+    nextion_set_val_global(&nextion_1, "calibration", "cb0", val);
+}
+void nextion_1_calibration_sensor_2_combobox_set_val(int32_t val)
+{
+    nextion_set_val_global(&nextion_1, "calibration", "cb1", val);
+}
+void nextion_1_calibration_sensor_3_combobox_set_val(int32_t val)
+{
+    nextion_set_val_global(&nextion_1, "calibration", "cb2", val);
+}
+void nextion_1_calibration_sensor_4_combobox_set_val(int32_t val)
+{
+    nextion_set_val_global(&nextion_1, "calibration", "cb3", val);
+}
+
+// WRITE COMBOBOX TXT
+void nextion_1_calibration_sensor_1_combobox_set_txt(char *txt)
+{
+    nextion_set_txt_global(&nextion_1, "calibration", "cb0", txt);
+}
+void nextion_1_calibration_sensor_2_combobox_set_txt(char *txt)
+{
+    nextion_set_txt_global(&nextion_1, "calibration", "cb1", txt);
+}
+void nextion_1_calibration_sensor_3_combobox_set_txt(char *txt)
+{
+    nextion_set_txt_global(&nextion_1, "calibration", "cb2", txt);
+}
+void nextion_1_calibration_sensor_4_combobox_set_txt(char *txt)
+{
+    nextion_set_txt_global(&nextion_1, "calibration", "cb3", txt);
+}
+
+// WRITE CHECKBOX
+void nextion_1_calibration_sensor_1_checkbox_set_val(bool val)
+{
+    nextion_set_val_global(&nextion_1, "calibration", "c0", val ? 1 : 0);
+}
+void nextion_1_calibration_sensor_2_checkbox_set_val(bool val)
+{
+    nextion_set_val_global(&nextion_1, "calibration", "c1", val ? 1 : 0);
+}
+void nextion_1_calibration_sensor_3_checkbox_set_val(bool val)
+{
+    nextion_set_val_global(&nextion_1, "calibration", "c2", val ? 1 : 0);
+}
+void nextion_1_calibration_sensor_4_checkbox_set_val(bool val)
+{
+    nextion_set_val_global(&nextion_1, "calibration", "c3", val ? 1 : 0);
+}
+void nextion_1_calibration_sensor_5_checkbox_set_val(bool val)
+{
+    nextion_set_val_global(&nextion_1, "calibration", "c4", val ? 1 : 0);
+}
+void nextion_1_calibration_sensor_6_checkbox_set_val(bool val)
+{
+    nextion_set_val_global(&nextion_1, "calibration", "c5", val ? 1 : 0);
+}
+void nextion_1_calibration_sensor_7_checkbox_set_val(bool val)
+{
+    nextion_set_val_global(&nextion_1, "calibration", "c6", val ? 1 : 0);
+}
+void nextion_1_calibration_sensor_8_checkbox_set_val(bool val)
+{
+    nextion_set_val_global(&nextion_1, "calibration", "c7", val ? 1 : 0);
+}
+
+// WRITE SWITCH
+void nextion_1_calibration_sensor_1_switch_set_val(bool val)
+{
+    nextion_set_val_global(&nextion_1, "calibration", "sw0", val ? 1 : 0);
+}
+void nextion_1_calibration_sensor_2_switch_set_val(bool val)
+{
+    nextion_set_val_global(&nextion_1, "calibration", "sw1", val ? 1 : 0);
+}
+void nextion_1_calibration_sensor_3_switch_set_val(bool val)
+{
+    nextion_set_val_global(&nextion_1, "calibration", "sw2", val ? 1 : 0);
+}
+void nextion_1_calibration_sensor_4_switch_set_val(bool val)
+{
+    nextion_set_val_global(&nextion_1, "calibration", "sw3", val ? 1 : 0);
+}
+void nextion_1_calibration_sensor_5_switch_set_val(bool val)
+{
+    nextion_set_val_global(&nextion_1, "calibration", "sw4", val ? 1 : 0);
+}
+void nextion_1_calibration_sensor_6_switch_set_val(bool val)
+{
+    nextion_set_val_global(&nextion_1, "calibration", "sw5", val ? 1 : 0);
+}
+void nextion_1_calibration_sensor_7_switch_set_val(bool val)
+{
+    nextion_set_val_global(&nextion_1, "calibration", "sw6", val ? 1 : 0);
+}
+void nextion_1_calibration_sensor_8_switch_set_val(bool val)
+{
+    nextion_set_val_global(&nextion_1, "calibration", "sw7", val ? 1 : 0);
 }
 
 /*
@@ -675,7 +920,6 @@ void nextion_1_inputcalibp3_applied10_write(double val, int precision)
     nextion_write_text_global(&nextion_1, "inputcalibp3", 31, buffer);
 }
 
-
 void nextion_1_inputcalibp3_adc0_write(double val)
 {
     char buffer[15 + 1];
@@ -741,4 +985,23 @@ void nextion_1_inputcalibp3_adc10_write(double val)
     char buffer[15 + 1];
     snprintf(buffer, sizeof(buffer), "%.0f", val);
     nextion_write_text_global(&nextion_1, "inputcalibp3", 42, buffer);
+}
+
+/*
+██╗███╗   ██╗██████╗ ██╗   ██╗████████╗     ██████╗ █████╗ ██╗     ██╗██████╗     ██████╗ ██╗  ██╗
+██║████╗  ██║██╔══██╗██║   ██║╚══██╔══╝    ██╔════╝██╔══██╗██║     ██║██╔══██╗    ██╔══██╗██║  ██║
+██║██╔██╗ ██║██████╔╝██║   ██║   ██║       ██║     ███████║██║     ██║██████╔╝    ██████╔╝███████║
+██║██║╚██╗██║██╔═══╝ ██║   ██║   ██║       ██║     ██╔══██║██║     ██║██╔══██╗    ██╔═══╝ ╚════██║
+██║██║ ╚████║██║     ╚██████╔╝   ██║       ╚██████╗██║  ██║███████╗██║██████╔╝    ██║          ██║
+╚═╝╚═╝  ╚═══╝╚═╝      ╚═════╝    ╚═╝        ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝╚═════╝     ╚═╝          ╚═╝
+
+*/
+
+void nextion_1_inputcalibp4_result_write(char *content)
+{
+    nextion_write_text_global(&nextion_1, "inputcalibp4", 2, content);
+}
+void nextion_1_inputcalibp4_result_set_txt_color(uint32_t color)
+{
+    nextion_set_pco_global(&nextion_1, "inputcalibp4", "t2", color);
 }

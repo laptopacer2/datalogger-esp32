@@ -173,12 +173,12 @@ nextion_res_t nextion_init(nextion_t *dev)
 nextion_res_t nextion_write_text_global(nextion_t *dev, char *global, int text_index, char *content)
 {
 
-    char buff[50] = {0};
-    int size = snprintf(buff, 50, "%s.t%i.txt=\"%s\"\xff\xff\xff", global, text_index, content);
+    char buff[100] = {0};
+    int size = snprintf(buff, sizeof(buff), "%s.t%i.txt=\"%s\"\xff\xff\xff", global, text_index, content);
 
-    if (size < 0 || size >= 50)
+    if (size < 0 || size >= sizeof(buff))
     {
-        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        ESP_LOGE(TAG, "file:%s,line:%i, size:%i", __FILE__, __LINE__, size);
         return NEXTION_ERROR;
     }
 
@@ -195,10 +195,90 @@ nextion_res_t nextion_write_text_global(nextion_t *dev, char *global, int text_i
 nextion_res_t nextion_write_combobox_global(nextion_t *dev, char *global, int combobox_index, char *content)
 {
 
-    char buff[50] = {0};
-    int size = snprintf(buff, 50, "%s.cb%i.txt=\"%s\"\xff\xff\xff", global, combobox_index, content);
+    char buff[100] = {0};
+    int size = snprintf(buff, sizeof(buff), "%s.cb%i.txt=\"%s\"\xff\xff\xff", global, combobox_index, content);
 
-    if (size < 0 || size >= 50)
+    if (size < 0 || size >= sizeof(buff))
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return NEXTION_ERROR;
+    }
+
+    int n = uart_write_bytes(dev->uart_num, buff, size);
+    if (n != size)
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return NEXTION_ERROR;
+    }
+
+    return NEXTION_OK;
+}
+nextion_res_t nextion_set_path_global(nextion_t *dev, char *global, char *obj, char *path)
+{
+    char buff[100] = {0};
+    int size = snprintf(buff, sizeof(buff), "%s.%s.path=\"%s\"\xff\xff\xff", global, obj, path);
+
+    if (size < 0 || size >= sizeof(buff))
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return NEXTION_ERROR;
+    }
+
+    int n = uart_write_bytes(dev->uart_num, buff, size);
+    if (n != size)
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return NEXTION_ERROR;
+    }
+
+    return NEXTION_OK;
+}
+nextion_res_t nextion_set_pco_global(nextion_t *dev, char *global, char *obj, uint32_t txt_color)
+{
+    char buff[100] = {0};
+    int size = snprintf(buff, sizeof(buff), "%s.%s.pco=%lu\xff\xff\xff", global, obj, txt_color);
+
+    if (size < 0 || size >= sizeof(buff))
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return NEXTION_ERROR;
+    }
+
+    int n = uart_write_bytes(dev->uart_num, buff, size);
+    if (n != size)
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return NEXTION_ERROR;
+    }
+
+    return NEXTION_OK;
+}
+nextion_res_t nextion_set_val_global(nextion_t *dev, char *global, char *obj, int32_t val)
+{
+    char buff[100] = {0};
+    int size = snprintf(buff, sizeof(buff), "%s.%s.val=%li\xff\xff\xff", global, obj, val);
+
+    if (size < 0 || size >= sizeof(buff))
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return NEXTION_ERROR;
+    }
+
+    int n = uart_write_bytes(dev->uart_num, buff, size);
+    if (n != size)
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return NEXTION_ERROR;
+    }
+
+    return NEXTION_OK;
+}
+nextion_res_t nextion_set_txt_global(nextion_t *dev, char *global, char *obj, char *txt)
+{
+    char buff[100] = {0};
+    int size = snprintf(buff, sizeof(buff), "%s.%s.txt=\"%s\"\xff\xff\xff", global, obj, txt);
+
+    if (size < 0 || size >= sizeof(buff))
     {
         ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
         return NEXTION_ERROR;

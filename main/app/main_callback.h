@@ -35,6 +35,11 @@ void calibration_switch_7_disabled_cb(msg_t *msg);
 void calibration_switch_7_enabled_cb(msg_t *msg);
 void calibration_switch_8_disabled_cb(msg_t *msg);
 void calibration_switch_8_enabled_cb(msg_t *msg);
+void calibration_sensor_1_unit_changed_cb(msg_t *msg);
+void calibration_sensor_2_unit_changed_cb(msg_t *msg);
+void calibration_sensor_3_unit_changed_cb(msg_t *msg);
+void calibration_sensor_4_unit_changed_cb(msg_t *msg);
+
 // INPUT CALIB P1
 void inputcalibp1_loaded_cb(msg_t *msg);
 void inputcalibp1_type_received_cb(msg_t *msg);
@@ -57,6 +62,8 @@ void inputcalibp3_row_to_fill_received(msg_t *msg);
 void inputcalibp4_loaded_cb(msg_t *msg);
 void inputcalibp4_name_received_cb(msg_t *msg);
 void inputcalibp4_save_pressed_cb(msg_t *msg);
+// NUMPAD POPUP
+void numpad_popup_loaded_cb(msg_t *msg);
 // EXTERNAL
 void external_sensor_5_unit_changed_cb(msg_t *msg);
 void external_sensor_6_unit_changed_cb(msg_t *msg);

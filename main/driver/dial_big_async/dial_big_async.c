@@ -191,7 +191,7 @@ dialbig_res_t dialbig_init(dialbig_t *dev)
     if (!task_initialized)
     {
         task_initialized = true;
-        xTaskCreate(dialbig_task, "dialbig_task", 2 * 1024, NULL, 25, NULL);
+        xTaskCreate(dialbig_task, "dialbig_task", 2 * 1024, NULL, 24, NULL);
     }
 
     return DIALBIG_OK;
