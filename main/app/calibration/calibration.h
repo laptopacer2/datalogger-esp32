@@ -17,38 +17,18 @@ typedef enum
     DISPLACEMENT_UNIT_CM,
     DISPLACEMENT_UNIT_IN,
     DISPLACEMENT_UNIT_MM,
-    DISPLACEMENT_UNIT_MAX,
-} sensor_displacement_unit_t;
-typedef enum
-{
     LOAD_UNIT_KN,
     LOAD_UNIT_LBF,
     LOAD_UNIT_N,
     LOAD_UNIT_KGF,
-    LOAD_UNIT_MAX,
-} sensor_load_unit_t;
-typedef enum
-{
     PRESSURE_UNIT_KPA,
     PRESSURE_UNIT_PSI,
     PRESSURE_UNIT_KSF,
     PRESSURE_UNIT_MPA,
     PRESSURE_UNIT_KGF_CM2,
-    PRESSURE_UNIT_MAX,
-} sensor_pressure_unit_t;
-typedef enum
-{
     VOLUME_UNIT_CM3,
     VOLUME_UNIT_IN3,
-    VOLUME_UNIT_MAX,
-} sensor_volume_unit_t;
-typedef union
-{
-    sensor_displacement_unit_t displacement_unit;
-    sensor_load_unit_t load_unit;
-    sensor_pressure_unit_t pressure_unit;
-    sensor_volume_unit_t volume_unit;
-    uint32_t u32;
+    SENSOR_UNIT_MAX,
 } sensor_unit_t;
 typedef enum
 {
@@ -56,7 +36,6 @@ typedef enum
     SENSIBILITY_UNIT_V_V,
     SENSIBILITY_UNIT_MAX,
 } sensor_sensibility_unit_t;
-
 typedef enum
 {
     NUM_POINTS_1 = 1,
@@ -78,31 +57,26 @@ typedef struct
     calib_points_num_t num_points;
     char name[CALIB_NAME_LEN_MAX + 1];
     int name_len;
-    int decimals_precision;
-} calib_params_t;
+    int num_decimals;
+} sensor_calib_t;
 
-#define CALIB_PARAMS_DEFAULT                      \
-    (calib_params_t)                              \
+#define SENSOR_CALIB_DEFAULT                      \
+    (sensor_calib_t)                              \
     {                                             \
         .sensor_type = SENSOR_TYPE_MAX,           \
         .capacity = 0.0,                          \
+        .unit = SENSOR_UNIT_MAX,                  \
         .sensibility_val = 0.0,                   \
         .sensibility_unit = SENSIBILITY_UNIT_MAX, \
         .limit_val = 0.0,                         \
         .limit_enabled = false,                   \
         .num_points = NUM_POINTS_CUSTOM,          \
         .name_len = 0,                            \
-        .decimals_precision = 0,                  \
+        .num_decimals = 0,                        \
     }
 
-typedef enum
-{
-    CALIB_ERRROR,
-    CALIB_OK,
-} calib_res_t;
-
-typedef double (*row_t)[2];
-typedef row_t table_t;
+typedef char(row_t)[TABLE_NUM_COLS][15];
+typedef row_t *table_t;
 
 typedef enum
 {
@@ -120,44 +94,6 @@ typedef enum
     ROW_NOT_TO_FILL,
 } row_to_fill_t;
 
-typedef enum
-{
-    SENSOR_1_UNDER_CALIBRATION,
-    SENSOR_2_UNDER_CALIBRATION,
-    SENSOR_3_UNDER_CALIBRATION,
-    SENSOR_4_UNDER_CALIBRATION,
-    SENSOR_5_UNDER_CALIBRATION,
-    SENSOR_6_UNDER_CALIBRATION,
-    SENSOR_7_UNDER_CALIBRATION,
-    SENSOR_8_UNDER_CALIBRATION,
-    NO_SENSOR_UNDER_CALIBRATION,
-} sensor_under_calibration_t;
-
-typedef enum
-{
-    SENSOR_1_TO_LOAD,
-    SENSOR_2_TO_LOAD,
-    SENSOR_3_TO_LOAD,
-    SENSOR_4_TO_LOAD,
-    SENSOR_5_TO_LOAD,
-    SENSOR_6_TO_LOAD,
-    SENSOR_7_TO_LOAD,
-    SENSOR_8_TO_LOAD,
-    NO_SENSOR_TO_LOAD,
-} sensor_to_load_t;
-
-typedef enum
-{
-    SAVE_CALIB_SUCCESS,
-    SAVE_CALIB_FAILED,
-} save_res_t;
-
-typedef enum
-{
-    LOAD_CALIB_SUCCESS,
-    LOAD_CALIB_FAILED,
-} load_res_t;
-
 void inputCalib_init();
 void inputCalib_set_sensor_type(char *type_str);
 void inputCalib_set_capacity(char *capacity_str);
@@ -168,23 +104,21 @@ void inputCalib_set_limit(char *limit_str);
 void inputCalib_set_limit_enable(void *limit_enable);
 void inputCalib_set_table(char *table_str);
 table_t inputCalib_set_num_points(char *num_points_str);
-void inputCalib_set_row_to_fill(void *row_to_fill);
+void inputCalib_set_row_to_fill(void *_row_to_fill);
 void inputCalib_set_name(char *name_str);
-save_res_t inputCalib_save(char **info);
-load_res_t inputCalib_load(sensor_to_load_t sensor, calib_params_t *out, size_t *len);
-load_res_t inputCalib_load_last_saved(sensor_to_load_t *sensor, calib_params_t *out, size_t *len);
-int inputCalib_get_decimals_precision();
-void inputCalib_set_sensor_under_calibration(void *index);
-sensor_under_calibration_t inputCalib_get_sensor_under_calibration();
+esp_err_t inputCalib_save(char **info);
+esp_err_t inputCalib_load(int i, sensor_calib_t *out);
+void inputCalib_delete(int i);
+esp_err_t inputCalib_load_last_saved(int *i, sensor_calib_t *out);
+int inputCalib_get_num_decimals();
+void inputCalib_set_index(void *i);
+int inputCalib_get_index();
 row_to_fill_t inputCalib_get_row_to_fill();
 
 // AUXILIAR FUNCTIONS
-char *inputCalib_unit_to_str(sensor_unit_t unit, sensor_type_t type);
-char *inputCalib_unitps_to_str(sensor_unit_t unit, sensor_type_t type);
-char *inputCalib_path_from_type(sensor_type_t type);
-int inputCalib_val_from_type_and_unit(sensor_type_t type, sensor_unit_t unit);
-esp_err_t inputCalib_get_sensor_unit_from_str(char *unit_str, sensor_unit_t *unit, sensor_type_t *type);
-double inputCalib_get_fc(sensor_unit_t unit_from, sensor_unit_t unit_to, sensor_type_t type);
-
-
-
+//char *inputCalib_unit_to_str(sensor_unit_t unit, sensor_type_t type);
+//char *inputCalib_unitps_to_str(sensor_unit_t unit);
+//char *inputCalib_combobox_path_from_type(sensor_type_t type);
+//int inputCalib_combobox_val_from_unit(sensor_unit_t unit);
+//esp_err_t inputCalib_get_sensor_unit_from_str(char *unit_str, sensor_unit_t *unit, sensor_type_t *type);
+//double inputCalib_get_fc(sensor_unit_t unit_from, sensor_unit_t unit_to, sensor_type_t type);

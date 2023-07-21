@@ -24,8 +24,26 @@
         msg.size = _size;                                                      \
         xQueueSend(_queue_dest, &msg, _timeout_ticks);                         \
     }
+#define SEND_I32_MSG(_queue_dest, _msg_type, _i32, _timeout_ticks) \
+    {                                                              \
+        msg_t msg;                                                 \
+        msg.type = _msg_type;                                      \
+        msg.content.i32 = _i32;                                    \
+        xQueueSend(_queue_dest, &msg, _timeout_ticks);             \
+    }
+#define SEND_CONTENT_STR_MSG(_queue_dest, _msg_type, _str, _strlen, _index, _timeout_ticks) \
+    {                                                                                       \
+        msg_t msg;                                                                          \
+        msg.type = _msg_type;                                                               \
+        msg.content.cs.str = _str;                                                          \
+        msg.content.cs.index = _index;                                                      \
+        msg.size = _strlen;                                                                 \
+        xQueueSend(_queue_dest, &msg, _timeout_ticks);                                      \
+    }
 extern QueueHandle_t main_queue;
 extern QueueHandle_t tx_queue;
+extern QueueHandle_t sensor_queue;
 void main_task(void *arg);
+void sensor_task(void *arg);
 void nextion_rx_task(void *arg);
 void nextion_tx_task(void *arg);

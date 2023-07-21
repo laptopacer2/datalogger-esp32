@@ -1,133 +1,159 @@
 #pragma once
 #include "project_typedefs.h"
 
+typedef struct
+{
+    int home_Name;
+    int home_Data;
+    int home_Dataps;
+    int home_Unit;
+    int home_Unitps;
+    int home_Tara;
+    int home_Use;
+    int calibration_Switch;
+    int calibration_Name;
+    int calibration_Range;
+    int calibration_Limit;
+    int calibration_Units;
+    int calibration_Value;
+    int calibration_Counts;
+    int calibration_Calibrate;
+} IdSx_t;
+
 void nextion_1_init();
 void nextion_1_start_timer();
 void nextion_1_stop_timer();
 void nextion_1_set_page(page_t new_page);
 page_t nextion_1_get_page();
 
-void nextion_1_home_sensor_1_write_data(float data);
-void nextion_1_home_sensor_2_write_data(float data);
-void nextion_1_home_sensor_3_write_data(float data);
-void nextion_1_home_sensor_4_write_data(float data);
-void nextion_1_home_sensor_5_write_data(float data, int decimals);
-void nextion_1_home_sensor_6_write_data(float data, int decimals);
-void nextion_1_home_sensor_7_write_data(float data, int decimals);
-void nextion_1_home_sensor_8_write_data(float data, int decimals);
 
-void nextion_1_home_sensor_1_write_dataps(float dataps);
-void nextion_1_home_sensor_2_write_dataps(float dataps);
-void nextion_1_home_sensor_3_write_dataps(float dataps);
-void nextion_1_home_sensor_4_write_dataps(float dataps);
-void nextion_1_home_sensor_5_write_dataps(float dataps, int decimals);
-void nextion_1_home_sensor_6_write_dataps(float dataps, int decimals);
-void nextion_1_home_sensor_7_write_dataps(float dataps, int decimals);
-void nextion_1_home_sensor_8_write_dataps(float dataps, int decimals);
+/*
+██╗  ██╗ ██████╗ ███╗   ███╗███████╗
+██║  ██║██╔═══██╗████╗ ████║██╔════╝
+███████║██║   ██║██╔████╔██║█████╗
+██╔══██║██║   ██║██║╚██╔╝██║██╔══╝
+██║  ██║╚██████╔╝██║ ╚═╝ ██║███████╗
+╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝
 
-void nextion_1_home_sensor_1_write_unit(char* unit);
-void nextion_1_home_sensor_2_write_unit(char* unit);
-void nextion_1_home_sensor_3_write_unit(char* unit);
-void nextion_1_home_sensor_4_write_unit(char* unit);
-void nextion_1_home_sensor_5_write_unit(char *unit);
-void nextion_1_home_sensor_6_write_unit(char *unit);
-void nextion_1_home_sensor_7_write_unit(char *unit);
-void nextion_1_home_sensor_8_write_unit(char *unit);
+*/
 
-void nextion_1_home_sensor_1_write_unitps(char* unitps);
-void nextion_1_home_sensor_2_write_unitps(char* unitps);
-void nextion_1_home_sensor_3_write_unitps(char* unitps);
-void nextion_1_home_sensor_4_write_unitps(char* unitps);
-void nextion_1_home_sensor_5_write_unitps(char *unitps);
-void nextion_1_home_sensor_6_write_unitps(char *unitps);
-void nextion_1_home_sensor_7_write_unitps(char *unitps);
-void nextion_1_home_sensor_8_write_unitps(char *unitps);
+// WRITE DATA
+void nextion_1_home_write_data(int index, char *content);
 
-void nextion_1_home_sensor_1_write_name(char *name);
-void nextion_1_home_sensor_2_write_name(char *name);
-void nextion_1_home_sensor_3_write_name(char *name);
-void nextion_1_home_sensor_4_write_name(char *name);
+// WRITE DATAPS
+void nextion_1_home_write_dataps(int index, char *content);
 
-void nextion_1_calibration_sensor_1_write_data(float data);
-void nextion_1_calibration_sensor_2_write_data(float data);
-void nextion_1_calibration_sensor_3_write_data(float data);
-void nextion_1_calibration_sensor_4_write_data(float data);
-void nextion_1_calibration_sensor_5_write_data(float data, int decimals);
-void nextion_1_calibration_sensor_6_write_data(float data, int decimals);
-void nextion_1_calibration_sensor_7_write_data(float data, int decimals);
-void nextion_1_calibration_sensor_8_write_data(float data, int decimals);
+// WRITE UNIT
+void nextion_1_home_write_unit(int index, char *content);
 
-void nextion_1_calibration_sensor_5_write_unit(char *unit);
-void nextion_1_calibration_sensor_6_write_unit(char *unit);
-void nextion_1_calibration_sensor_7_write_unit(char *unit);
-void nextion_1_calibration_sensor_8_write_unit(char *unit);
+// WRITE UNITPS
+void nextion_1_home_write_unitps(int index, char *content);
 
-void nextion_1_calibration_sensor_1_write_name(char *name);
-void nextion_1_calibration_sensor_2_write_name(char *name);
-void nextion_1_calibration_sensor_3_write_name(char *name);
-void nextion_1_calibration_sensor_4_write_name(char *name);
+// WRITE NAME
+void nextion_1_home_write_name(int index, char *content);
 
-void nextion_1_calibration_sensor_1_write_limit(char *unit, double limit, int decimals);
-void nextion_1_calibration_sensor_2_write_limit(char *unit, double limit, int decimals);
-void nextion_1_calibration_sensor_3_write_limit(char *unit, double limit, int decimals);
-void nextion_1_calibration_sensor_4_write_limit(char *unit, double limit, int decimals);
+/*
+ ██████╗ █████╗ ██╗     ██╗██████╗ ██████╗  █████╗ ████████╗██╗ ██████╗ ███╗   ██╗
+██╔════╝██╔══██╗██║     ██║██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝██║██╔═══██╗████╗  ██║
+██║     ███████║██║     ██║██████╔╝██████╔╝███████║   ██║   ██║██║   ██║██╔██╗ ██║
+██║     ██╔══██║██║     ██║██╔══██╗██╔══██╗██╔══██║   ██║   ██║██║   ██║██║╚██╗██║
+╚██████╗██║  ██║███████╗██║██████╔╝██║  ██║██║  ██║   ██║   ██║╚██████╔╝██║ ╚████║
+ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
 
-void nextion_1_calibration_sensor_1_combobox_set_path(char *path);
-void nextion_1_calibration_sensor_2_combobox_set_path(char *path);
-void nextion_1_calibration_sensor_3_combobox_set_path(char *path);
-void nextion_1_calibration_sensor_4_combobox_set_path(char *path);
+*/
 
-void nextion_1_calibration_sensor_1_combobox_set_val(int32_t val);
-void nextion_1_calibration_sensor_2_combobox_set_val(int32_t val);
-void nextion_1_calibration_sensor_3_combobox_set_val(int32_t val);
-void nextion_1_calibration_sensor_4_combobox_set_val(int32_t val);
+// WRITE VALUE
+void nextion_1_calibration_write_value(int index, char *content);
 
-void nextion_1_calibration_sensor_1_combobox_set_txt(char *txt);
-void nextion_1_calibration_sensor_2_combobox_set_txt(char *txt);
-void nextion_1_calibration_sensor_3_combobox_set_txt(char *txt);
-void nextion_1_calibration_sensor_4_combobox_set_txt(char *txt);
+// WRITE UNIT
+void nextion_1_calibration_write_unit(int index, char *content);
 
-void nextion_1_calibration_sensor_1_checkbox_set_val(bool val);
-void nextion_1_calibration_sensor_2_checkbox_set_val(bool val);
-void nextion_1_calibration_sensor_3_checkbox_set_val(bool val);
-void nextion_1_calibration_sensor_4_checkbox_set_val(bool val);
-void nextion_1_calibration_sensor_5_checkbox_set_val(bool val);
-void nextion_1_calibration_sensor_6_checkbox_set_val(bool val);
-void nextion_1_calibration_sensor_7_checkbox_set_val(bool val);
-void nextion_1_calibration_sensor_8_checkbox_set_val(bool val);
+// WRITE NAME
+void nextion_1_calibration_write_name(int index, char *content);
 
-void nextion_1_calibration_sensor_1_switch_set_val(bool val);
-void nextion_1_calibration_sensor_2_switch_set_val(bool val);
-void nextion_1_calibration_sensor_3_switch_set_val(bool val);
-void nextion_1_calibration_sensor_4_switch_set_val(bool val);
-void nextion_1_calibration_sensor_5_switch_set_val(bool val);
-void nextion_1_calibration_sensor_6_switch_set_val(bool val);
-void nextion_1_calibration_sensor_7_switch_set_val(bool val);
-void nextion_1_calibration_sensor_8_switch_set_val(bool val);
+// WRITE RANGE
+void nextion_1_calibration_write_range(int index, char *content);
 
-void nextion_1_inputcalibp3_applied0_write(double val, int precision);
-void nextion_1_inputcalibp3_applied1_write(double val, int precision);
-void nextion_1_inputcalibp3_applied2_write(double val, int precision);
-void nextion_1_inputcalibp3_applied3_write(double val, int precision);
-void nextion_1_inputcalibp3_applied4_write(double val, int precision);
-void nextion_1_inputcalibp3_applied5_write(double val, int precision);
-void nextion_1_inputcalibp3_applied6_write(double val, int precision);
-void nextion_1_inputcalibp3_applied7_write(double val, int precision);
-void nextion_1_inputcalibp3_applied8_write(double val, int precision);
-void nextion_1_inputcalibp3_applied9_write(double val, int precision);
-void nextion_1_inputcalibp3_applied10_write(double val, int precision);
+// WRITE UNITS PATH
+void nextion_1_calibration_write_units_path(int index, char *content);
 
-void nextion_1_inputcalibp3_adc0_write(double val);
-void nextion_1_inputcalibp3_adc1_write(double val);
-void nextion_1_inputcalibp3_adc2_write(double val);
-void nextion_1_inputcalibp3_adc3_write(double val);
-void nextion_1_inputcalibp3_adc4_write(double val);
-void nextion_1_inputcalibp3_adc5_write(double val);
-void nextion_1_inputcalibp3_adc6_write(double val);
-void nextion_1_inputcalibp3_adc7_write(double val);
-void nextion_1_inputcalibp3_adc8_write(double val);
-void nextion_1_inputcalibp3_adc9_write(double val);
-void nextion_1_inputcalibp3_adc10_write(double val);
+// WRITE UNITS VAL
+void nextion_1_calibration_write_units_val(int index, int32_t content);
 
-void nextion_1_inputcalibp4_result_write(char* content);
-void nextion_1_inputcalibp4_result_set_txt_color(uint32_t color);
+// WRITE LIMIT
+void nextion_1_calibration_write_limit(int index, int32_t content);
+
+// WRITE SWITCH
+void nextion_1_calibration_write_switch(int index, int32_t content);
+
+// WRITE CONTENT
+void nextion_1_calibration_write_counts(int index, char *content);
+
+/*
+██╗███╗   ██╗██████╗ ██╗   ██╗████████╗     ██████╗ █████╗ ██╗     ██╗██████╗     ██████╗ ██████╗
+██║████╗  ██║██╔══██╗██║   ██║╚══██╔══╝    ██╔════╝██╔══██╗██║     ██║██╔══██╗    ██╔══██╗╚════██╗
+██║██╔██╗ ██║██████╔╝██║   ██║   ██║       ██║     ███████║██║     ██║██████╔╝    ██████╔╝ █████╔╝
+██║██║╚██╗██║██╔═══╝ ██║   ██║   ██║       ██║     ██╔══██║██║     ██║██╔══██╗    ██╔═══╝  ╚═══██╗
+██║██║ ╚████║██║     ╚██████╔╝   ██║       ╚██████╗██║  ██║███████╗██║██████╔╝    ██║     ██████╔╝
+╚═╝╚═╝  ╚═══╝╚═╝      ╚═════╝    ╚═╝        ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝╚═════╝     ╚═╝     ╚═════╝
+
+*/
+
+void nextion_1_inputcalibp3_write_real0(char *content);
+void nextion_1_inputcalibp3_write_real1(char *content);
+void nextion_1_inputcalibp3_write_real2(char *content);
+void nextion_1_inputcalibp3_write_real3(char *content);
+void nextion_1_inputcalibp3_write_real4(char *content);
+void nextion_1_inputcalibp3_write_real5(char *content);
+void nextion_1_inputcalibp3_write_real6(char *content);
+void nextion_1_inputcalibp3_write_real7(char *content);
+void nextion_1_inputcalibp3_write_real8(char *content);
+void nextion_1_inputcalibp3_write_real9(char *content);
+void nextion_1_inputcalibp3_write_real10(char *content);
+
+void nextion_1_inputcalibp3_write_raw0(char *content);
+void nextion_1_inputcalibp3_write_raw1(char *content);
+void nextion_1_inputcalibp3_write_raw2(char *content);
+void nextion_1_inputcalibp3_write_raw3(char *content);
+void nextion_1_inputcalibp3_write_raw4(char *content);
+void nextion_1_inputcalibp3_write_raw5(char *content);
+void nextion_1_inputcalibp3_write_raw6(char *content);
+void nextion_1_inputcalibp3_write_raw7(char *content);
+void nextion_1_inputcalibp3_write_raw8(char *content);
+void nextion_1_inputcalibp3_write_raw9(char *content);
+void nextion_1_inputcalibp3_write_raw10(char *content);
+
+/*
+██╗███╗   ██╗██████╗ ██╗   ██╗████████╗     ██████╗ █████╗ ██╗     ██╗██████╗     ██████╗ ██╗  ██╗
+██║████╗  ██║██╔══██╗██║   ██║╚══██╔══╝    ██╔════╝██╔══██╗██║     ██║██╔══██╗    ██╔══██╗██║  ██║
+██║██╔██╗ ██║██████╔╝██║   ██║   ██║       ██║     ███████║██║     ██║██████╔╝    ██████╔╝███████║
+██║██║╚██╗██║██╔═══╝ ██║   ██║   ██║       ██║     ██╔══██║██║     ██║██╔══██╗    ██╔═══╝ ╚════██║
+██║██║ ╚████║██║     ╚██████╔╝   ██║       ╚██████╗██║  ██║███████╗██║██████╔╝    ██║          ██║
+╚═╝╚═╝  ╚═══╝╚═╝      ╚═════╝    ╚═╝        ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝╚═════╝     ╚═╝          ╚═╝
+
+*/
+
+void nextion_1_inputcalibp4_write_result(char *content);
+void nextion_1_inputcalibp4_write_result_color(uint32_t content);
+
+
+/*
+███╗   ██╗███████╗██╗    ██╗    ████████╗███████╗███████╗████████╗
+████╗  ██║██╔════╝██║    ██║    ╚══██╔══╝██╔════╝██╔════╝╚══██╔══╝
+██╔██╗ ██║█████╗  ██║ █╗ ██║       ██║   █████╗  ███████╗   ██║
+██║╚██╗██║██╔══╝  ██║███╗██║       ██║   ██╔══╝  ╚════██║   ██║
+██║ ╚████║███████╗╚███╔███╔╝       ██║   ███████╗███████║   ██║
+╚═╝  ╚═══╝╚══════╝ ╚══╝╚══╝        ╚═╝   ╚══════╝╚══════╝   ╚═╝
+
+*/
+
+void nextion_1_newtest_write_table01(char *content);
+void nextion_1_newtest_write_table11(char *content);
+void nextion_1_newtest_write_table21(char *content);
+void nextion_1_newtest_write_table31(char *content);
+void nextion_1_newtest_write_table41(char *content);
+void nextion_1_newtest_write_table51(char *content);
+void nextion_1_newtest_write_table61(char *content);
+void nextion_1_newtest_write_table71(char *content);
+void nextion_1_newtest_write_table81(char *content);
+void nextion_1_newtest_write_table91(char *content);

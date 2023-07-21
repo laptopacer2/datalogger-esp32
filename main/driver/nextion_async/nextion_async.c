@@ -10,6 +10,16 @@
 
 #define TAG "NEXTION_ASYNC"
 
+/*
+ ██████╗ ██████╗ ██████╗ ███████╗    ██████╗ ██╗  ██╗
+██╔════╝██╔═══██╗██╔══██╗██╔════╝    ██╔══██╗╚██╗██╔╝
+██║     ██║   ██║██████╔╝█████╗      ██████╔╝ ╚███╔╝
+██║     ██║   ██║██╔══██╗██╔══╝      ██╔══██╗ ██╔██╗
+╚██████╗╚██████╔╝██║  ██║███████╗    ██║  ██║██╔╝ ██╗
+ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝    ╚═╝  ╚═╝╚═╝  ╚═╝
+
+*/
+
 void nextion_task_i0(void *arg);
 
 int slot = 0;
@@ -170,33 +180,20 @@ nextion_res_t nextion_init(nextion_t *dev)
     return NEXTION_OK;
 }
 
-nextion_res_t nextion_write_text_global(nextion_t *dev, char *global, int text_index, char *content)
+/*
+ ██████╗ ███████╗███╗   ██╗███████╗██████╗ ██╗ ██████╗
+██╔════╝ ██╔════╝████╗  ██║██╔════╝██╔══██╗██║██╔════╝
+██║  ███╗█████╗  ██╔██╗ ██║█████╗  ██████╔╝██║██║
+██║   ██║██╔══╝  ██║╚██╗██║██╔══╝  ██╔══██╗██║██║
+╚██████╔╝███████╗██║ ╚████║███████╗██║  ██║██║╚██████╗
+ ╚═════╝ ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝╚═╝ ╚═════╝
+
+*/
+
+static nextion_res_t nextion_set_string_attribute_from_objName(nextion_t *dev, char *pageName, char *objName, char *attr, char *content)
 {
-
     char buff[100] = {0};
-    int size = snprintf(buff, sizeof(buff), "%s.t%i.txt=\"%s\"\xff\xff\xff", global, text_index, content);
-
-    if (size < 0 || size >= sizeof(buff))
-    {
-        ESP_LOGE(TAG, "file:%s,line:%i, size:%i", __FILE__, __LINE__, size);
-        return NEXTION_ERROR;
-    }
-
-    int n = uart_write_bytes(dev->uart_num, buff, size);
-    if (n != size)
-    {
-        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
-        return NEXTION_ERROR;
-    }
-
-    return NEXTION_OK;
-}
-
-nextion_res_t nextion_write_combobox_global(nextion_t *dev, char *global, int combobox_index, char *content)
-{
-
-    char buff[100] = {0};
-    int size = snprintf(buff, sizeof(buff), "%s.cb%i.txt=\"%s\"\xff\xff\xff", global, combobox_index, content);
+    int size = snprintf(buff, sizeof(buff), "%s.%s.%s=\"%s\"\xff\xff\xff", pageName, objName, attr, content);
 
     if (size < 0 || size >= sizeof(buff))
     {
@@ -213,10 +210,10 @@ nextion_res_t nextion_write_combobox_global(nextion_t *dev, char *global, int co
 
     return NEXTION_OK;
 }
-nextion_res_t nextion_set_path_global(nextion_t *dev, char *global, char *obj, char *path)
+static nextion_res_t nextion_set_u32_attribute_from_objName(nextion_t *dev, char *pageName, char *objName, char *attr, uint32_t content)
 {
     char buff[100] = {0};
-    int size = snprintf(buff, sizeof(buff), "%s.%s.path=\"%s\"\xff\xff\xff", global, obj, path);
+    int size = snprintf(buff, sizeof(buff), "%s.%s.%s=%lu\xff\xff\xff", pageName, objName, attr, content);
 
     if (size < 0 || size >= sizeof(buff))
     {
@@ -233,10 +230,10 @@ nextion_res_t nextion_set_path_global(nextion_t *dev, char *global, char *obj, c
 
     return NEXTION_OK;
 }
-nextion_res_t nextion_set_pco_global(nextion_t *dev, char *global, char *obj, uint32_t txt_color)
+static nextion_res_t nextion_set_i32_attribute_from_objName(nextion_t *dev, char *pageName, char *objName, char *attr, int32_t content)
 {
     char buff[100] = {0};
-    int size = snprintf(buff, sizeof(buff), "%s.%s.pco=%lu\xff\xff\xff", global, obj, txt_color);
+    int size = snprintf(buff, sizeof(buff), "%s.%s.%s=%li\xff\xff\xff", pageName, objName, attr, content);
 
     if (size < 0 || size >= sizeof(buff))
     {
@@ -253,10 +250,10 @@ nextion_res_t nextion_set_pco_global(nextion_t *dev, char *global, char *obj, ui
 
     return NEXTION_OK;
 }
-nextion_res_t nextion_set_val_global(nextion_t *dev, char *global, char *obj, int32_t val)
+static nextion_res_t nextion_set_string_attribute_from_objId(nextion_t *dev, int pageId, int objId, char *attr, char *content)
 {
     char buff[100] = {0};
-    int size = snprintf(buff, sizeof(buff), "%s.%s.val=%li\xff\xff\xff", global, obj, val);
+    int size = snprintf(buff, sizeof(buff), "p[%i].b[%i].%s=\"%s\"\xff\xff\xff", pageId, objId, attr, content);
 
     if (size < 0 || size >= sizeof(buff))
     {
@@ -273,10 +270,10 @@ nextion_res_t nextion_set_val_global(nextion_t *dev, char *global, char *obj, in
 
     return NEXTION_OK;
 }
-nextion_res_t nextion_set_txt_global(nextion_t *dev, char *global, char *obj, char *txt)
+static nextion_res_t nextion_set_u32_attribute_from_objId(nextion_t *dev, int pageId, int objId, char *attr, uint32_t content)
 {
     char buff[100] = {0};
-    int size = snprintf(buff, sizeof(buff), "%s.%s.txt=\"%s\"\xff\xff\xff", global, obj, txt);
+    int size = snprintf(buff, sizeof(buff), "p[%i].b[%i].%s=%lu\xff\xff\xff", pageId, objId, attr, content);
 
     if (size < 0 || size >= sizeof(buff))
     {
@@ -286,6 +283,143 @@ nextion_res_t nextion_set_txt_global(nextion_t *dev, char *global, char *obj, ch
 
     int n = uart_write_bytes(dev->uart_num, buff, size);
     if (n != size)
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return NEXTION_ERROR;
+    }
+
+    return NEXTION_OK;
+}
+static nextion_res_t nextion_set_i32_attribute_from_objId(nextion_t *dev, int pageId, int objId, char *attr, int32_t content)
+{
+    char buff[100] = {0};
+    int size = snprintf(buff, sizeof(buff), "p[%i].b[%i].%s=%li\xff\xff\xff", pageId, objId, attr, content);
+
+    if (size < 0 || size >= sizeof(buff))
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return NEXTION_ERROR;
+    }
+
+    int n = uart_write_bytes(dev->uart_num, buff, size);
+    if (n != size)
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return NEXTION_ERROR;
+    }
+
+    return NEXTION_OK;
+}
+
+/*
+███████╗██████╗  ██████╗ ███╗   ███╗     ██████╗ ██████╗      ██╗███╗   ██╗ █████╗ ███╗   ███╗███████╗
+██╔════╝██╔══██╗██╔═══██╗████╗ ████║    ██╔═══██╗██╔══██╗     ██║████╗  ██║██╔══██╗████╗ ████║██╔════╝
+█████╗  ██████╔╝██║   ██║██╔████╔██║    ██║   ██║██████╔╝     ██║██╔██╗ ██║███████║██╔████╔██║█████╗
+██╔══╝  ██╔══██╗██║   ██║██║╚██╔╝██║    ██║   ██║██╔══██╗██   ██║██║╚██╗██║██╔══██║██║╚██╔╝██║██╔══╝
+██║     ██║  ██║╚██████╔╝██║ ╚═╝ ██║    ╚██████╔╝██████╔╝╚█████╔╝██║ ╚████║██║  ██║██║ ╚═╝ ██║███████╗
+╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝     ╚═════╝ ╚═════╝  ╚════╝ ╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝
+
+*/
+nextion_res_t nextion_set_path_from_objName(nextion_t *dev, char *pageName, char *objName, char *content)
+{
+    nextion_res_t res;
+    res = nextion_set_string_attribute_from_objName(dev, pageName, objName, "path", content);
+    if (res != NEXTION_OK)
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return NEXTION_ERROR;
+    }
+
+    return NEXTION_OK;
+}
+nextion_res_t nextion_set_pco_from_objName(nextion_t *dev, char *pageName, char *objName, uint32_t content)
+{
+    nextion_res_t res;
+    res = nextion_set_u32_attribute_from_objName(dev, pageName, objName, "pco", content);
+    if (res != NEXTION_OK)
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return NEXTION_ERROR;
+    }
+
+    return NEXTION_OK;
+}
+nextion_res_t nextion_set_val_from_objName(nextion_t *dev, char *pageName, char *objName, int32_t content)
+{
+    nextion_res_t res;
+    res = nextion_set_i32_attribute_from_objName(dev, pageName, objName, "val", content);
+    if (res != NEXTION_OK)
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return NEXTION_ERROR;
+    }
+
+    return NEXTION_OK;
+}
+nextion_res_t nextion_set_txt_from_objName(nextion_t *dev, char *pageName, char *objName, char *content)
+{
+    nextion_res_t res;
+    res = nextion_set_string_attribute_from_objName(dev, pageName, objName, "txt", content);
+    if (res != NEXTION_OK)
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return NEXTION_ERROR;
+    }
+
+    return NEXTION_OK;
+}
+
+/*
+███████╗██████╗  ██████╗ ███╗   ███╗     ██████╗ ██████╗      ██╗    ██╗██████╗
+██╔════╝██╔══██╗██╔═══██╗████╗ ████║    ██╔═══██╗██╔══██╗     ██║    ██║██╔══██╗
+█████╗  ██████╔╝██║   ██║██╔████╔██║    ██║   ██║██████╔╝     ██║    ██║██║  ██║
+██╔══╝  ██╔══██╗██║   ██║██║╚██╔╝██║    ██║   ██║██╔══██╗██   ██║    ██║██║  ██║
+██║     ██║  ██║╚██████╔╝██║ ╚═╝ ██║    ╚██████╔╝██████╔╝╚█████╔╝    ██║██████╔╝
+╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝     ╚═════╝ ╚═════╝  ╚════╝     ╚═╝╚═════╝
+
+*/
+
+nextion_res_t nextion_set_path_from_objId(nextion_t *dev, int pageIndex, int objId, char *content)
+{
+    nextion_res_t res;
+    res = nextion_set_string_attribute_from_objId(dev, pageIndex, objId, "path", content);
+    if (res != NEXTION_OK)
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return NEXTION_ERROR;
+    }
+
+    return NEXTION_OK;
+}
+nextion_res_t nextion_set_pco_from_objId(nextion_t *dev, int pageIndex, int objId, uint32_t content)
+{
+    nextion_res_t res;
+    res = nextion_set_u32_attribute_from_objId(dev, pageIndex, objId, "pco", content);
+    if (res != NEXTION_OK)
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return NEXTION_ERROR;
+    }
+
+    return NEXTION_OK;
+}
+nextion_res_t nextion_set_val_from_objId(nextion_t *dev, int pageIndex, int objId, int32_t content)
+{
+    nextion_res_t res;
+    res = nextion_set_i32_attribute_from_objId(dev, pageIndex, objId, "val", content);
+    if (res != NEXTION_OK)
+    {
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return NEXTION_ERROR;
+    }
+
+    return NEXTION_OK;
+}
+nextion_res_t nextion_set_txt_from_objId(nextion_t *dev, int pageIndex, int objId, char *content)
+{
+    nextion_res_t res;
+    res = nextion_set_string_attribute_from_objId(dev, pageIndex, objId, "txt", content);
+    if (res != NEXTION_OK)
     {
         ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
         return NEXTION_ERROR;

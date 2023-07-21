@@ -4,106 +4,113 @@
 #include "dial_big_async.h"
 #include "calibration.h"
 #include "configuration.h"
+#include "stdint.h"
 
-void load_cell_1_init();
-void load_cell_1_enable();
-void load_cell_1_disable();
-bool load_cell_1_is_enabled();
-void load_cell_1_set_tara();
-double load_cell_1_get_tara();
-void load_cell_1_clear_tara();
-double load_cell_1_get_real();
-double load_cell_1_get_raw();
-double load_cell_1_get_rawps();
-double load_cell_1_get_realps();
-bool load_cell_1_is_calibrated();
-void load_cell_1_set_calib(calib_params_t *in);
-sensor_config_t *load_cell_1_get_config();
-void load_cell_1_set_config(sensor_config_t *in);
-double load_cell_1_get_capacity();
-double load_cell_1_get_calib_decimals();
-sensor_unit_t load_cell_1_get_unit_from_calib();
+typedef enum
+{
+    CLASS_I, // factory calibrated and settings on sensor side
+    CLASS_D, // need calibration and settings on equip side
+    CLASS_MAX,
+} sensor_class_t;
 
-void load_cell_2_init();
-void load_cell_2_enable();
-void load_cell_2_disable();
-bool load_cell_2_is_enabled();
-void load_cell_2_set_tara();
-double load_cell_2_get_tara();
-void load_cell_2_clear_tara();
-double load_cell_2_get_real();
-double load_cell_2_get_raw();
-double load_cell_2_get_rawps();
-double load_cell_2_get_realps();
-bool load_cell_2_is_calibrated();
-void load_cell_2_set_calib(calib_params_t *in);
-sensor_config_t *load_cell_2_get_config();
-void load_cell_2_set_config(sensor_config_t *in);
+typedef struct
+{
+    double value;
+    sensor_unit_t unit;
+    int num_decimals;
+    int num_ints;
+    int32_t tickcount;
+} real_t;
+typedef struct
+{
+    int32_t value;
+    int32_t tickcount;
+} raw_t;
+typedef union
+{
+    raw_t raw;
+    real_t real;
+} reading_t;
+typedef struct
+{
+   reading_t reading;
+    int index;
+} content_reading_t;
+typedef struct
+{
+    sensor_class_t class;
+    int index;
+} content_class_t;
+typedef struct
+{
+    char *str;
+    int index;
+} content_str_t;
+typedef struct
+{
+    int32_t raw;
+    double rawps;
+    double real;
+    double realps;
+    int32_t tickcount;
+    sensor_unit_t unit;
+    int num_decimals;
+    int num_ints;
+} sensor_data_t;
+#define SENSOR_DATA_DEFAULT \
+    (sensor_data_t) { 0, 0.0, 0.0, 0.0, 0, SENSOR_UNIT_MAX, 0, 0 }
 
-void load_cell_3_init();
-void load_cell_3_enable();
-void load_cell_3_disable();
-bool load_cell_3_is_enabled();
-void load_cell_3_set_tara();
-double load_cell_3_get_tara();
-void load_cell_3_clear_tara();
-double load_cell_3_get_real();
-double load_cell_3_get_raw();
-double load_cell_3_get_rawps();
-double load_cell_3_get_realps();
-bool load_cell_3_is_calibrated();
-void load_cell_3_set_calib(calib_params_t *in);
-sensor_config_t *load_cell_3_get_config();
-void load_cell_3_set_config(sensor_config_t *in);
+typedef enum
+{
+    USE_FREE,
+    USE_CALIBRATING,
+    USE_TESTING,
+    USE_MAX,
+} sensor_use_t;
+typedef struct
+{
+    sensor_calib_t calib;
+    sensor_config_t config;
+    sensor_data_t data;
+    sensor_class_t class;
+    sensor_use_t use;
+    bool is_calibrated;
+} sensor_dev_t;
 
-void load_cell_4_init();
-void load_cell_4_enable();
-void load_cell_4_disable();
-bool load_cell_4_is_enabled();
-void load_cell_4_set_tara();
-double load_cell_4_get_tara();
-void load_cell_4_clear_tara();
-double load_cell_4_get_real();
-double load_cell_4_get_raw();
-double load_cell_4_get_rawps();
-double load_cell_4_get_realps();
-bool load_cell_4_is_calibrated();
-void load_cell_4_set_calib(calib_params_t *in);
-sensor_config_t *load_cell_4_get_config();
-void load_cell_4_set_config(sensor_config_t *in);
+void sensor_init(int index);
+void sensor_set_class(int index, sensor_class_t class);
+sensor_class_t sensor_get_class(int index);
+void sensor_enable(int index);
+void sensor_disable(int index);
+bool sensor_is_enabled(int index);
+void sensor_set_tara(int index);
+double sensor_get_tara(int index);
+void sensor_clear_tara(int index);
+double sensor_get_real(int index);
+char *sensor_get_real_str(int index);
+int32_t sensor_get_raw(int index);
+char *sensor_get_raw_str(int index);
+double sensor_get_rawps(int index);
+double sensor_get_realps(int index);
+char *sensor_get_realps_str(int index);
+bool sensor_is_calibrated(int index);
+bool sensor_is_ready(int index);
+void sensor_set_calibration(int index, sensor_calib_t *calib);
+void sensor_set_configuration(int index, sensor_config_t *config);
+sensor_config_t *sensor_get_configuration(int index);
+double sensor_get_capacity(int index);
+int sensor_get_num_decimals(int index);
+sensor_unit_t sensor_get_unit(int index);
+sensor_unit_t sensor_get_src_unit(int index);
+char *sensor_get_unit_str(int index);
+char *sensor_get_unitps_str(int index);
+void sensor_set_data(int index, reading_t *reading);
+char *sensor_get_name(int index);
+char *sensor_get_range(int index);
+char *sensor_get_units_path(int index);
+int32_t sensor_get_units_val(int index);
+bool sensor_is_limit_enabled(int index);
+sensor_type_t sensor_get_type(int index);
+void sensor_set_limits(int index, bool limits);
 
-void dial_big_1_init();
-void dial_big_1_enable();
-void dial_big_1_disable();
-bool dial_big_1_is_enabled();
-float dial_big_1_get_real();
-float dial_big_1_get_realps();
-int dial_big_1_get_decimals();
-bool dial_big_1_is_calibrated();
 
-void dial_big_2_init();
-void dial_big_2_enable();
-void dial_big_2_disable();
-bool dial_big_2_is_enabled();
-float dial_big_2_get_real();
-float dial_big_2_get_realps();
-int dial_big_2_get_decimals();
-bool dial_big_2_is_calibrated();
-
-void dial_big_3_init();
-void dial_big_3_enable();
-void dial_big_3_disable();
-bool dial_big_3_is_enabled();
-float dial_big_3_get_real();
-float dial_big_3_get_realps();
-int dial_big_3_get_decimals();
-bool dial_big_3_is_calibrated();
-
-void dial_big_4_init();
-void dial_big_4_enable();
-void dial_big_4_disable();
-bool dial_big_4_is_enabled();
-float dial_big_4_get_real();
-float dial_big_4_get_realps();
-int dial_big_4_get_decimals();
-bool dial_big_4_is_calibrated();

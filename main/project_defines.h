@@ -1,5 +1,18 @@
 #pragma once
 
+#define SENSOR_1_INDEX (0)
+#define SENSOR_2_INDEX (1)
+#define SENSOR_3_INDEX (2)
+#define SENSOR_4_INDEX (3)
+#define SENSOR_5_INDEX (4)
+#define SENSOR_6_INDEX (5)
+#define SENSOR_7_INDEX (6)
+#define SENSOR_8_INDEX (7)
+
+#define NUM_SENSORS (8)
+#define TABLE_NUM_ROWS (11)
+#define TABLE_NUM_COLS (2)
+
 // RX CMD
 #define uTX_nRX_PIN (16)
 #define uRX_nTX_PIN (17)
@@ -39,21 +52,15 @@
 #define CALIB_NAME_LEN_MAX (30) // without null end
 
 #define NVS_NAMESPACE "storage"
-#define NVS_KEY_SENSOR_1_CALIB "s1calib"
-#define NVS_KEY_SENSOR_2_CALIB "s2calib"
-#define NVS_KEY_SENSOR_3_CALIB "s3calib"
-#define NVS_KEY_SENSOR_4_CALIB "s4calib"
-#define NVS_KEY_SENSOR_5_CALIB "s5calib"
-#define NVS_KEY_SENSOR_6_CALIB "s6calib"
-#define NVS_KEY_SENSOR_7_CALIB "s7calib"
-#define NVS_KEY_SENSOR_8_CALIB "s8calib"
+#define NVS_KEY_CALIB_BASE_STR "nvscalib"
+#define NVS_KEY_CONFIG_BASE_STR "nvsconfig"
 
-#define NVS_KEY_SENSOR_1_CONFIG "s1cfg"
-#define NVS_KEY_SENSOR_2_CONFIG "s2cfg"
-#define NVS_KEY_SENSOR_3_CONFIG "s3cfg"
-#define NVS_KEY_SENSOR_4_CONFIG "s4cfg"
-#define NVS_KEY_SENSOR_5_CONFIG "s5cfg"
-#define NVS_KEY_SENSOR_6_CONFIG "s6cfg"
-#define NVS_KEY_SENSOR_7_CONFIG "s7cfg"
-#define NVS_KEY_SENSOR_8_CONFIG "s8cfg"
-
+#define LOGERROR() ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__)
+#define RETURN_IF_TRUE(a) \
+    {                     \
+        if (a)            \
+        {                 \
+            LOGERROR();   \
+            return;       \
+        }                 \
+    }

@@ -26,7 +26,7 @@ typedef enum
     NEXTION_STARTUP_ID = 0x00,
     SERIAL_BUFFER_OVERFLOW_ID = 0x24,
     TOUCH_EVENT_ID = 0x65,
-    CUSTOM_EVENT_ID = 0X72, 
+    CUSTOM_EVENT_ID = 0X72,
     CMD_ID_MAX = 0XFF,
 } nextion_cmd_id_t;
 
@@ -81,11 +81,12 @@ typedef struct
 } nextion_t;
 
 nextion_res_t nextion_init(nextion_t *dev);
-nextion_res_t nextion_write_text_global(nextion_t *dev, char *global, int text_index, char *content);
-nextion_res_t nextion_write_combobox_global(nextion_t *dev, char *global, int combobox_index, char *content);
-nextion_res_t nextion_set_path_global(nextion_t *dev, char *global, char *obj, char *path);
-nextion_res_t nextion_set_pco_global(nextion_t *dev, char *global, char *obj, uint32_t txt_color);
-nextion_res_t nextion_set_val_global(nextion_t *dev, char *global, char *obj, int32_t val);
-nextion_res_t nextion_set_txt_global(nextion_t *dev, char *global, char *obj, char *txt);
+nextion_res_t nextion_set_path_from_objName(nextion_t *dev, char *pageName, char *objName, char *content);
+nextion_res_t nextion_set_pco_from_objName(nextion_t *dev, char *pageName, char *objName, uint32_t content);
+nextion_res_t nextion_set_val_from_objName(nextion_t *dev, char *pageName, char *objName, int32_t content);
+nextion_res_t nextion_set_txt_from_objName(nextion_t *dev, char *pageName, char *objName, char *content);
 
-
+nextion_res_t nextion_set_path_from_objId(nextion_t *dev, int pageIndex, int objId, char *content);
+nextion_res_t nextion_set_pco_from_objId(nextion_t *dev, int pageIndex, int objId, uint32_t content);
+nextion_res_t nextion_set_val_from_objId(nextion_t *dev, int pageIndex, int objId, int32_t content);
+nextion_res_t nextion_set_txt_from_objId(nextion_t *dev, int pageIndex, int objId, char *content);
