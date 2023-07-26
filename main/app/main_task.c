@@ -18,7 +18,6 @@ static msg_t msg;
 void main_task(void *arg)
 {
     ESP_LOGI(TAG, TAG);
-    // vTaskDelay(pdMS_TO_TICKS(3000));
     main_task_init();
 
     while (1)

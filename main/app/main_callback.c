@@ -28,6 +28,7 @@ void main_task_init()
 {
     // init gui
     nextion_1_init();
+    vTaskDelay(pdMS_TO_TICKS(3000));
 
     // init sensors default
     for (int index = 0; index < NUM_SENSORS; index++)

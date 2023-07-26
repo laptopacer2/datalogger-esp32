@@ -29,20 +29,20 @@ static bool isr_service_installed = false;
     }
 
 // todo: add critical section
-#define PULSE(sck_pin)                                    \
-    {                                                     \
-        portMUX_TYPE spin = portMUX_INITIALIZER_UNLOCKED; \
-        taskENTER_CRITICAL(&spin);                        \
-        gpio_set_level(sck_pin, 1);                       \
-        nNOP(10);                                         \
-        taskEXIT_CRITICAL(&spin);                         \
-        gpio_set_level(sck_pin, 0);                       \
-        nNOP(10);                                         \
+#define PULSE(sck_pin)              \
+    {                               \
+                                    \
+        taskENTER_CRITICAL(&spin);  \
+        gpio_set_level(sck_pin, 1); \
+        nNOP(10);                   \
+        taskEXIT_CRITICAL(&spin);   \
+        gpio_set_level(sck_pin, 0); \
+        nNOP(10);                   \
     }
 
 void hx711_pendfunc(void *arg1, uint32_t arg2)
 {
-
+    portMUX_TYPE spin = portMUX_INITIALIZER_UNLOCKED;
     int slot = (int)arg1;
     hx711_t *dev = devs[slot];
 
@@ -83,7 +83,7 @@ void hx711_pendfunc(void *arg1, uint32_t arg2)
     // RE-ENABLE INTERRUPT
     gpio_intr_enable(dev->dout_pin);
 
-   // portYIELD();
+    // portYIELD();
 }
 void IRAM_ATTR hx711_global_isr(void *arg)
 {

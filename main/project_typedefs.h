@@ -74,6 +74,7 @@ typedef enum
     PAGE_INPUTCALIBP4 = 11,
     PAGE_KEYBDA = 12,
     PAGE_NEW_TEST = 13,
+    PAGE_INTRO = 14,
 } page_t;
 
 typedef struct
