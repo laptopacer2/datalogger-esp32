@@ -301,9 +301,18 @@ void code_rcv_1_cb(nextion_cmd_t *cmd)
         // INPUTCALIBP4 SAVE
         else if (page == 0x0B && component_id == 0x0A)
             SEND_EMPTY_MSG(main_queue, INPUTCALIBP4_SAVE_PRESSED, portMAX_DELAY)
+
+        // INPUT CONFIGURATION P1 LOADED
+        else if (page == 0x0F && component_id == 0x00)
+            SEND_EMPTY_MSG(main_queue, INPUTCONFIGP1_LOADED, portMAX_DELAY)
+        // INPUTCONFIGP1 SAVE
+        else if (page == 0x0F && component_id == 0x0D)
+            SEND_EMPTY_MSG(main_queue, INPUTCONFIGP1_SAVE_PRESSED, portMAX_DELAY)
+
         // NUMPAP POPUP LOADED
         else if (page == 0x03 && component_id == 0x00)
             SEND_EMPTY_MSG(main_queue, NUMPAD_POPUP_LOADED, portMAX_DELAY)
+
         // NEW TEST LOADED
         else if (page == 0x0D && component_id == 0x00)
             SEND_EMPTY_MSG(main_queue, NEW_TEST_LOADED, portMAX_DELAY)
@@ -358,15 +367,12 @@ void code_rcv_1_cb(nextion_cmd_t *cmd)
         // INPUTCALIBP1  SENSIBILITY UNIT RECEIVED
         else if (page == 8 && component_id == 0x0B)
             SEND_ADDR_MSG(main_queue, INPUTCALIBP1_SENSIBILITY_UNIT_RECEIVED, data, data_len, portMAX_DELAY)
-
         // INPUTCALIBP1 SENSOR INDEX RECEIVED
         else if (page == 8 && component_id == 0x13)
             SEND_ADDR_MSG(main_queue, INPUTCALIBP1_SENSOR_INDEX_RECEIVED, data, data_len, portMAX_DELAY)
-
         // INPUTCALIBP2 CALIBRATION LIMIT RECEIVED
         else if (page == 9 && component_id == 0x08)
             SEND_ADDR_MSG(main_queue, INPUTCALIBP2_CALIBRATION_LIMIT_RECEIVED, data, data_len, portMAX_DELAY)
-
         // INPUTCALIBP2  LIMIT ENABLE RECEIVED
         else if (page == 9 && component_id == 0x0D)
             SEND_ADDR_MSG(main_queue, INPUTCALIBP2_LIMIT_ENABLE_RECEIVED, data, data_len, portMAX_DELAY)
@@ -382,6 +388,23 @@ void code_rcv_1_cb(nextion_cmd_t *cmd)
         // INPUTCALIBP4 NAME RECEIVED
         else if (page == 0x0B && component_id == 0x08)
             SEND_ADDR_MSG(main_queue, INPUTCALIBP4_NAME_RECEIVED, data, data_len, portMAX_DELAY)
+
+        // INPUTCONFIGP1 TYPE RECEIVED
+        else if (page == 0x0F && component_id == 0x0F)
+            SEND_ADDR_MSG(main_queue, INPUTCONFIGP1_TYPE_RECEIVED, data, data_len, portMAX_DELAY)
+        // INPUTCONFIGP1 CAPACITY RECEIVED
+        else if (page == 0x0F && component_id == 0x04)
+            SEND_ADDR_MSG(main_queue, INPUTCONFIGP1_CAPACITY_RECEIVED, data, data_len, portMAX_DELAY)
+        // INPUTCONFIGP1 CAPACITY UNIT RECEIVED
+        else if (page == 0x0F && component_id == 0x0E)
+            SEND_ADDR_MSG(main_queue, INPUTCONFIGP1_CAPACITY_UNIT_RECEIVED, data, data_len, portMAX_DELAY)
+        // INPUTCONFIGP1 NAME RECEIVED
+        else if (page == 0x0F && component_id == 0x09)
+            SEND_ADDR_MSG(main_queue, INPUTCONFIGP1_NAME_RECEIVED, data, data_len, portMAX_DELAY)
+        // INPUTCONFIGP1  INDEX RECEIVED
+        else if (page == 0x0F && component_id == 0x11)
+            SEND_ADDR_MSG(main_queue, INPUTCONFIGP1_INDEX_RECEIVED, data, data_len, portMAX_DELAY)
+
         // NEW TEST SET INDEX 1
         else if (page == 0x0D && component_id == 0x2E)
             SEND_ADDR_MSG(main_queue, NEW_TEST_SET_INDEX1, data, data_len, portMAX_DELAY)
@@ -667,6 +690,23 @@ void nextion_1_inputcalibp4_write_result(char *content)
 void nextion_1_inputcalibp4_write_result_color(uint32_t content)
 {
     nextion_set_pco_from_objId(&nextion_1, PAGE_INPUTCALIBP4, 13, content);
+}
+/*
+██╗███╗   ██╗██████╗ ██╗   ██╗████████╗     ██████╗ ██████╗ ███╗   ██╗███████╗██╗ ██████╗     ██████╗  ██╗
+██║████╗  ██║██╔══██╗██║   ██║╚══██╔══╝    ██╔════╝██╔═══██╗████╗  ██║██╔════╝██║██╔════╝     ██╔══██╗███║
+██║██╔██╗ ██║██████╔╝██║   ██║   ██║       ██║     ██║   ██║██╔██╗ ██║█████╗  ██║██║  ███╗    ██████╔╝╚██║
+██║██║╚██╗██║██╔═══╝ ██║   ██║   ██║       ██║     ██║   ██║██║╚██╗██║██╔══╝  ██║██║   ██║    ██╔═══╝  ██║
+██║██║ ╚████║██║     ╚██████╔╝   ██║       ╚██████╗╚██████╔╝██║ ╚████║██║     ██║╚██████╔╝    ██║      ██║
+╚═╝╚═╝  ╚═══╝╚═╝      ╚═════╝    ╚═╝        ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚═╝ ╚═════╝     ╚═╝      ╚═╝
+
+*/
+void nextion_1_inputconfigp1_write_result(char *content)
+{
+    nextion_set_txt_from_objId(&nextion_1, PAGE_INPUTCONFIGP1, 16, content);
+}
+void nextion_1_inputconfigp1_write_result_color(uint32_t content)
+{
+    nextion_set_pco_from_objId(&nextion_1, PAGE_INPUTCONFIGP1, 16, content);
 }
 
 /*

@@ -50,29 +50,27 @@ void sensor_clear_tara(int index)
 }
 double sensor_get_real(int index)
 {
-    return sensor[index].data.real;
+    sensor_class_t class = sensor[index].class;
+    sensor_dev_t *s = sensor + index;
+    if (class == CLASS_D)
+        return (s->data.real - s->config.tara_val) * s->config.unit_fc;
+    else
+        return s->data.real;
 }
 char *sensor_get_real_str(int index)
 {
-    sensor_class_t class = sensor[index].class;
-    if (class == CLASS_D)
-    {
-        int num_decimals = sensor[index].config.num_decimals;
-        double real = sensor[index].data.real;
-        snprintf(buffer, sizeof(buffer), "%.*lf", num_decimals, real);
-        return buffer;
-    }
-    else
-    {
-        int num_decimals = sensor[index].data.num_decimals;
-        double real = sensor[index].data.real;
-        snprintf(buffer, sizeof(buffer), "%.*lf", num_decimals, real);
-        return buffer;
-    }
+    int num_decimals = sensor_get_num_decimals(index);
+    double real = sensor_get_real(index);
+    snprintf(buffer, sizeof(buffer), "%.*lf", num_decimals, real);
+    return buffer;
 }
 int32_t sensor_get_raw(int index)
 {
-    return sensor[index].data.raw;
+    sensor_class_t class = sensor[index].class;
+    if (class == CLASS_D)
+        return sensor[index].data.raw;
+    else
+        return 0;
 }
 char *sensor_get_raw_str(int index)
 {
@@ -90,11 +88,19 @@ char *sensor_get_raw_str(int index)
 }
 double sensor_get_rawps(int index)
 {
-    return sensor[index].data.rawps;
+    sensor_class_t class = sensor[index].class;
+    if (class == CLASS_D)
+        return sensor[index].data.rawps;
+    else
+        return 0.0;
 }
 double sensor_get_realps(int index)
 {
-    return sensor[index].data.realps;
+    sensor_class_t class = sensor[index].class;
+    if (class == CLASS_D)
+        return sensor[index].data.realps * sensor[index].config.unit_fc;
+    else
+        return sensor[index].data.realps;
 }
 char *sensor_get_realps_str(int index)
 {
@@ -153,13 +159,15 @@ double sensor_get_capacity(int index)
     sensor_class_t class = sensor[index].class;
     if (class == CLASS_D)
     {
-        double calibration_capacity = sensor[index].calib.capacity;
-        double configuration_unit_fc = sensor[index].config.unit_fc;
-        return calibration_capacity * configuration_unit_fc;
+        double capacity = sensor[index].calib.capacity;
+        double unit_fc = sensor[index].config.unit_fc;
+        return capacity * unit_fc;
     }
     else
     {
-        return 0.0;
+        double capacity = sensor[index].config.capacity;
+        double unit_fc = sensor[index].config.unit_fc;
+        return capacity * unit_fc;
     }
 }
 int sensor_get_num_decimals(int index)
@@ -176,15 +184,15 @@ sensor_unit_t sensor_get_unit(int index)
     if (class == CLASS_D)
         return sensor[index].config.unit;
     else
-        return sensor[index].data.unit;
+        return sensor[index].data.unit_src;
 }
 sensor_unit_t sensor_get_src_unit(int index)
 {
     sensor_class_t class = sensor[index].class;
     if (class == CLASS_D)
-        return sensor[index].calib.unit;
+        return sensor[index].calib.unit_src;
     else
-        return sensor[index].data.unit;
+        return sensor[index].config.capacity_unit;
 }
 char *sensor_get_unit_str(int index)
 {
@@ -368,7 +376,7 @@ static void sensor_set_data_for_class_I(int index, real_t *r)
     // PRIOR DATA
     int32_t last_ms = s->data.tickcount;
     double last_real = s->data.real;
-    sensor_unit_t last_unit = s->data.unit;
+    sensor_unit_t last_unit = s->data.unit_src;
 
     // CURRENT DATA
     int32_t ms = r->tickcount;
@@ -387,16 +395,19 @@ static void sensor_set_data_for_class_I(int index, real_t *r)
     s->data.real = real;
     s->data.realps = realps;
     s->data.tickcount = ms;
-    s->data.unit = unit;
+    s->data.unit_src = unit;
     s->data.num_decimals = r->num_decimals;
     s->data.num_ints = r->num_ints;
 
     // TRANSMIT EVENT
     if (unit_changed)
     {
+        uint8_t *str = (uint8_t *)malloc(1);
+        *str = unit;
         msg_t msg;
         msg.type = SENSOR_UNIT_CHANGED;
-        msg.content.cc.index = index;
+        msg.content.cs.index = index;
+        msg.content.cs.str = (char *)str;
         xQueueSend(main_queue, &msg, portMAX_DELAY);
     }
 }
@@ -411,7 +422,11 @@ void sensor_set_data(int index, reading_t *reading)
 }
 char *sensor_get_name(int index)
 {
-    return sensor[index].calib.name;
+    sensor_class_t class = sensor[index].class;
+    if (class == CLASS_D)
+        return sensor[index].calib.name;
+    else
+        return sensor[index].config.name;
 }
 char *sensor_get_range(int index)
 {
@@ -421,56 +436,72 @@ char *sensor_get_range(int index)
 }
 char *sensor_get_units_path(int index)
 {
-    sensor_type_t type = sensor[index].calib.sensor_type;
-    switch (type)
+    sensor_class_t class = sensor[index].class;
+    if (class == CLASS_D)
     {
-    case DISPLACEMENT:
-        return "cm\r\nin\r\nmm";
-    case LOAD:
-        return "kN\r\nlbf\r\nN\r\nkgf";
-    case PRESSURE:
-        return "kPa\r\npsi\r\nksf\r\nMPa\r\nkgf/cm2";
-    case VOLUME:
-        return "cm3\r\nin3";
-    default:
+        sensor_type_t type = sensor[index].calib.sensor_type;
+        switch (type)
+        {
+        case DISPLACEMENT:
+            return "cm\r\nin\r\nmm";
+        case LOAD:
+            return "kN\r\nlbf\r\nN\r\nkgf";
+        case PRESSURE:
+            return "kPa\r\npsi\r\nksf\r\nMPa\r\nkgf/cm2";
+        case VOLUME:
+            return "cm3\r\nin3";
+        default:
+            return "";
+        }
+    }
+    else
+    {
         return "";
     }
 }
 int32_t sensor_get_units_val(int index)
 {
-    sensor_unit_t unit = sensor_get_unit(index);
-    switch (unit)
+    sensor_class_t class = sensor[index].class;
+    if (class == CLASS_D)
     {
-    case DISPLACEMENT_UNIT_CM:
+        sensor_unit_t unit = sensor_get_unit(index);
+        switch (unit)
+        {
+        case DISPLACEMENT_UNIT_CM:
+            return 0;
+        case DISPLACEMENT_UNIT_IN:
+            return 1;
+        case DISPLACEMENT_UNIT_MM:
+            return 2;
+        case LOAD_UNIT_KN:
+            return 0;
+        case LOAD_UNIT_LBF:
+            return 1;
+        case LOAD_UNIT_N:
+            return 2;
+        case LOAD_UNIT_KGF:
+            return 3;
+        case PRESSURE_UNIT_KPA:
+            return 0;
+        case PRESSURE_UNIT_PSI:
+            return 1;
+        case PRESSURE_UNIT_KSF:
+            return 2;
+        case PRESSURE_UNIT_MPA:
+            return 3;
+        case PRESSURE_UNIT_KGF_CM2:
+            return 4;
+        case VOLUME_UNIT_CM3:
+            return 0;
+        case VOLUME_UNIT_IN3:
+            return 1;
+        default:
+            return 255;
+        }
+    }
+    else
+    {
         return 0;
-    case DISPLACEMENT_UNIT_IN:
-        return 1;
-    case DISPLACEMENT_UNIT_MM:
-        return 2;
-    case LOAD_UNIT_KN:
-        return 0;
-    case LOAD_UNIT_LBF:
-        return 1;
-    case LOAD_UNIT_N:
-        return 2;
-    case LOAD_UNIT_KGF:
-        return 3;
-    case PRESSURE_UNIT_KPA:
-        return 0;
-    case PRESSURE_UNIT_PSI:
-        return 1;
-    case PRESSURE_UNIT_KSF:
-        return 2;
-    case PRESSURE_UNIT_MPA:
-        return 3;
-    case PRESSURE_UNIT_KGF_CM2:
-        return 4;
-    case VOLUME_UNIT_CM3:
-        return 0;
-    case VOLUME_UNIT_IN3:
-        return 1;
-    default:
-        return 255;
     }
 }
 bool sensor_is_limit_enabled(int index)
@@ -480,7 +511,11 @@ bool sensor_is_limit_enabled(int index)
 
 sensor_type_t sensor_get_type(int index)
 {
-    return sensor[index].calib.sensor_type;
+    sensor_class_t class = sensor[index].class;
+    if (class == CLASS_D)
+        return sensor[index].calib.sensor_type;
+    else
+        return sensor[index].config.sensor_type;
 }
 void sensor_set_limits(int index, bool limits)
 {

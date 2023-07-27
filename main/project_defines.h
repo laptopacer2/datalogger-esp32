@@ -8,6 +8,7 @@
 #define SENSOR_6_INDEX (5)
 #define SENSOR_7_INDEX (6)
 #define SENSOR_8_INDEX (7)
+#define SENSOR_MAX_INDEX (SENSOR_8_INDEX + 1)
 
 #define NUM_SENSORS (8)
 #define TABLE_NUM_ROWS (11)

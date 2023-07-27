@@ -33,7 +33,7 @@ typedef union
 } reading_t;
 typedef struct
 {
-   reading_t reading;
+    reading_t reading;
     int index;
 } content_reading_t;
 typedef struct
@@ -53,12 +53,22 @@ typedef struct
     double real;
     double realps;
     int32_t tickcount;
-    sensor_unit_t unit;
+    sensor_unit_t unit_src;
     int num_decimals;
     int num_ints;
 } sensor_data_t;
-#define SENSOR_DATA_DEFAULT \
-    (sensor_data_t) { 0, 0.0, 0.0, 0.0, 0, SENSOR_UNIT_MAX, 0, 0 }
+#define SENSOR_DATA_DEFAULT      \
+    (sensor_data_t)              \
+    {                            \
+        .raw = 0,                \
+        .rawps = 0.0,            \
+        .real = 0.0,             \
+        .realps = 0.0,           \
+        .tickcount = 0,          \
+        .unit_src = SENSOR_UNIT_MAX, \
+        .num_decimals = 0,       \
+        .num_ints = 0,           \
+    }
 
 typedef enum
 {
@@ -112,5 +122,3 @@ int32_t sensor_get_units_val(int index);
 bool sensor_is_limit_enabled(int index);
 sensor_type_t sensor_get_type(int index);
 void sensor_set_limits(int index, bool limits);
-
-

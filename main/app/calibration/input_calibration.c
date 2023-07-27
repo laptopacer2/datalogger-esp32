@@ -35,197 +35,34 @@ void inputCalib_init()
 
     is_initialized = ((err == ESP_OK) ? true : false);
 }
-void inputCalib_set_sensor_type(char *type_str)
+void inputCalib_set_sensor_type(sensor_type_t type)
 {
-    bool is_type_displacement = (strcmp(type_str, "DISPLACEMENT") == 0);
-    if (is_type_displacement)
-    {
-        calibration.sensor_type = DISPLACEMENT;
-        ESP_LOGI(TAG, "SENSOR TYPE: DISPLACEMENT");
-        return;
-    }
-
-    bool is_type_load = (strcmp(type_str, "LOAD") == 0);
-    if (is_type_load)
-    {
-        calibration.sensor_type = LOAD;
-        ESP_LOGI(TAG, "SENSOR TYPE: LOAD");
-        return;
-    }
-
-    bool is_type_pressure = (strcmp(type_str, "PRESSURE") == 0);
-    if (is_type_pressure)
-    {
-        calibration.sensor_type = PRESSURE;
-        ESP_LOGI(TAG, "SENSOR TYPE: PRESSURE");
-        return;
-    }
-
-    bool is_type_volume = (strcmp(type_str, "VOLUME") == 0);
-    if (is_type_volume)
-    {
-        calibration.sensor_type = VOLUME;
-        ESP_LOGI(TAG, "SENSOR TYPE: VOLUME");
-        return;
-    }
-
-    ESP_LOGE(TAG, "%s: line %d", __FILE__, __LINE__);
+    calibration.sensor_type = type;
+    ESP_LOGI(TAG, "inputCalib_set_sensor_type : %u", type);
 }
-void inputCalib_set_capacity(char *capacity_str)
+sensor_type_t inputCalib_get_sensor_type()
 {
-    calibration.capacity = atof(capacity_str);
-    ESP_LOGI(TAG, "capacity : %f", calibration.capacity);
+    return calibration.sensor_type;
 }
-void inputCalib_set_unit(char *unit_str)
+void inputCalib_set_capacity(double capacity)
 {
-    if (calibration.sensor_type == DISPLACEMENT)
-    {
-        bool unit_is_cm = (strcmp(unit_str, "cm") == 0);
-        if (unit_is_cm)
-        {
-            calibration.unit = DISPLACEMENT_UNIT_CM;
-            ESP_LOGI(TAG, "SENSOR UNIT: DISPLACEMENT_UNIT_CM");
-            return;
-        }
-
-        bool unit_is_in = (strcmp(unit_str, "in") == 0);
-        if (unit_is_in)
-        {
-            calibration.unit = DISPLACEMENT_UNIT_IN;
-            ESP_LOGI(TAG, "SENSOR UNIT: DISPLACEMENT_UNIT_IN");
-            return;
-        }
-
-        bool unit_is_mm = (strcmp(unit_str, "mm") == 0);
-        if (unit_is_mm)
-        {
-            calibration.unit = DISPLACEMENT_UNIT_MM;
-            ESP_LOGI(TAG, "SENSOR UNIT: DISPLACEMENT_UNIT_MM");
-            return;
-        }
-
-        ESP_LOGE(TAG, "%s: line %d", __FILE__, __LINE__);
-    }
-    else if (calibration.sensor_type == LOAD)
-    {
-        bool unit_is_kN = (strcmp(unit_str, "kN") == 0);
-        if (unit_is_kN)
-        {
-            calibration.unit = LOAD_UNIT_KN;
-            ESP_LOGI(TAG, "SENSOR UNIT: LOAD_UNIT_KN");
-            return;
-        }
-        bool unit_is_lbf = (strcmp(unit_str, "lbf") == 0);
-        if (unit_is_lbf)
-        {
-            calibration.unit = LOAD_UNIT_LBF;
-            ESP_LOGI(TAG, "SENSOR UNIT: LOAD_UNIT_LBF");
-            return;
-        }
-        bool unit_is_N = (strcmp(unit_str, "N") == 0);
-        if (unit_is_N)
-        {
-            calibration.unit = LOAD_UNIT_N;
-            ESP_LOGI(TAG, "SENSOR UNIT: LOAD_UNIT_N");
-            return;
-        }
-        bool unit_is_kgf = (strcmp(unit_str, "kgf") == 0);
-        if (unit_is_kgf)
-        {
-            calibration.unit = LOAD_UNIT_KGF;
-            ESP_LOGI(TAG, "SENSOR UNIT: LOAD_UNIT_KGF");
-            return;
-        }
-
-        ESP_LOGE(TAG, "%s: line %d", __FILE__, __LINE__);
-    }
-    else if (calibration.sensor_type == PRESSURE)
-    {
-        bool unit_is_kPa = (strcmp(unit_str, "kPa") == 0);
-        if (unit_is_kPa)
-        {
-            calibration.unit = PRESSURE_UNIT_KPA;
-            ESP_LOGI(TAG, "SENSOR UNIT: PRESSURE_UNIT_KPA");
-            return;
-        }
-        bool unit_is_psi = (strcmp(unit_str, "psi") == 0);
-        if (unit_is_psi)
-        {
-            calibration.unit = PRESSURE_UNIT_PSI;
-            ESP_LOGI(TAG, "SENSOR UNIT: PRESSURE_UNIT_PSI");
-            return;
-        }
-        bool unit_is_ksf = (strcmp(unit_str, "ksf") == 0);
-        if (unit_is_ksf)
-        {
-            calibration.unit = PRESSURE_UNIT_KSF;
-            ESP_LOGI(TAG, "SENSOR UNIT: PRESSURE_UNIT_KSF");
-            return;
-        }
-        bool unit_is_MPa = (strcmp(unit_str, "MPa") == 0);
-        if (unit_is_MPa)
-        {
-            calibration.unit = PRESSURE_UNIT_MPA;
-            ESP_LOGI(TAG, "SENSOR UNIT: PRESSURE_UNIT_MPA");
-            return;
-        }
-        bool unit_is_kgf_cm2 = (strcmp(unit_str, "kgf/cm2") == 0);
-        if (unit_is_kgf_cm2)
-        {
-            calibration.unit = PRESSURE_UNIT_KGF_CM2;
-            ESP_LOGI(TAG, "SENSOR UNIT: PRESSURE_UNIT_KGF_CM2");
-            return;
-        }
-
-        ESP_LOGE(TAG, "%s: line %d", __FILE__, __LINE__);
-    }
-    else if (calibration.sensor_type == VOLUME)
-    {
-        bool unit_is_cm3 = (strcmp(unit_str, "cm3") == 0);
-        if (unit_is_cm3)
-        {
-            calibration.unit = VOLUME_UNIT_CM3;
-            ESP_LOGI(TAG, "SENSOR UNIT: VOLUME_UNIT_CM3");
-            return;
-        }
-        bool unit_is_in3 = (strcmp(unit_str, "in3") == 0);
-        if (unit_is_in3)
-        {
-            calibration.unit = VOLUME_UNIT_IN3;
-            ESP_LOGI(TAG, "SENSOR UNIT: VOLUME_UNIT_IN3");
-            return;
-        }
-
-        ESP_LOGE(TAG, "%s: line %d", __FILE__, __LINE__);
-    }
-    else
-    {
-        ESP_LOGE(TAG, "%s: line %d", __FILE__, __LINE__);
-    }
+    calibration.capacity = capacity;
+    ESP_LOGI(TAG, "inputCalib_set_capacity : %lf", capacity);
 }
-void inputCalib_set_sensibility(char *sensibility_str)
+void inputCalib_set_unit(sensor_unit_t unit)
 {
-    calibration.sensibility_val = atof(sensibility_str);
-    ESP_LOGI(TAG, "sensibility : %lf", calibration.sensibility_val);
+    calibration.unit_src = unit;
+    ESP_LOGI(TAG, "inputCalib_set_unit : %u", unit);
 }
-void inputCalib_set_sensibility_unit(char *unit_str)
+void inputCalib_set_sensibility(double sensibility)
 {
-    bool unit_is_mV_V = (strcmp(unit_str, "mV/V") == 0);
-    if (unit_is_mV_V)
-    {
-        calibration.sensibility_unit = SENSIBILITY_UNIT_MV_V;
-        ESP_LOGI(TAG, "SENSIBILITY UNIT: MV_V");
-        return;
-    }
-    bool unit_is_V_V = (strcmp(unit_str, "V/V") == 0);
-    if (unit_is_V_V)
-    {
-        calibration.sensibility_unit = SENSIBILITY_UNIT_V_V;
-        ESP_LOGI(TAG, "SENSIBILITY UNIT: V_V");
-        return;
-    }
-
-    ESP_LOGE(TAG, "%s: line %d", __FILE__, __LINE__);
+    calibration.sensibility_val = sensibility;
+    ESP_LOGI(TAG, "sensibility : %lf", sensibility);
+}
+void inputCalib_set_sensibility_unit(sensor_sensibility_unit_t sensibility_unit)
+{
+    calibration.sensibility_unit = sensibility_unit;
+    ESP_LOGI(TAG, "inputCalib_set_sensibility_unit: %u", sensibility_unit);
 }
 void inputCalib_set_limit(char *limit_str)
 {
@@ -237,10 +74,10 @@ void inputCalib_set_limit(char *limit_str)
     calibration.num_decimals = ptr ? strlen(ptr) : 0;
     ESP_LOGI(TAG, "decimals_precision : %i", calibration.num_decimals);
 }
-void inputCalib_set_limit_enable(void *limit_enable)
+void inputCalib_set_limit_enable(bool limit_enable)
 {
-    calibration.limit_enabled = (*(uint8_t *)limit_enable) == 1;
-    ESP_LOGI(TAG, "limit_enabled : %s ", (calibration.limit_enabled == true) ? "true" : "false");
+    calibration.limit_enabled = limit_enable;
+    ESP_LOGI(TAG, "inputCalib_set_limit_enable : %s ", limit_enable ? "true" : "false");
 }
 void inputCalib_set_table(char *table_str)
 {
@@ -261,89 +98,47 @@ void inputCalib_set_table(char *table_str)
             else
                 calibration.table[i][j] = atof(ptr);
         }
-        ESP_LOGI(TAG, "%.*f  %.*f",
+        ESP_LOGI(TAG, "%.*lf  %.*lf",
                  calibration.num_decimals, calibration.table[i][0],
                  calibration.num_decimals, calibration.table[i][1]);
     }
 }
-table_t inputCalib_set_num_points(char *num_points_str)
+table_t inputCalib_set_num_points(calib_points_num_t num_points)
 {
     int num_decimals = inputCalib_get_num_decimals();
+    calibration.num_points = num_points;
+    ESP_LOGI(TAG, "inputCalib_set_num_points: %u", num_points);
+    table_t table = calloc(TABLE_NUM_ROWS, sizeof(row_t));
+    double divisor = num_points * 1.0f;
 
-    if (strcmp(num_points_str, "1 Point") == 0)
+    if (num_points == NUM_POINTS_CUSTOM)
     {
-        ESP_LOGI(TAG, "NUM POINTS: 1");
-        calibration.num_points = NUM_POINTS_1;
-        table_t table = calloc(TABLE_NUM_ROWS, sizeof(row_t));
-
-        for (int i = 0; i < TABLE_NUM_ROWS; i++)
-        {
-            double value;
-            if (i <= calibration.num_points)
-                value = 0.00 + i * ((calibration.limit_enabled) ? calibration.limit_val : calibration.capacity) / 1.0;
-            else
-                value = 0.00;
-
-            snprintf(table[i][0], sizeof(table[i][0]), "%.*lf", num_decimals, value);
-            snprintf(table[i][1], sizeof(table[i][1]), "%.*lf", num_decimals, 0.0);
-        }
-        return table;
-    }
-    else if (strcmp(num_points_str, "5 Points") == 0)
-    {
-        ESP_LOGI(TAG, "NUM POINTS: 5");
-        calibration.num_points = NUM_POINTS_5;
-        table_t table = calloc(TABLE_NUM_ROWS, sizeof(row_t));
-
-        for (int i = 0; i < TABLE_NUM_ROWS; i++)
-        {
-            double value;
-            if (i <= calibration.num_points)
-                value = 0.00 + i * ((calibration.limit_enabled) ? calibration.limit_val : calibration.capacity) / 5.0;
-            else
-                value = 0.00;
-
-            snprintf(table[i][0], sizeof(table[i][0]), "%.*lf", num_decimals, value);
-            snprintf(table[i][1], sizeof(table[i][1]), "%.*lf", num_decimals, 0.0);
-        }
-        return table;
-    }
-    else if (strcmp(num_points_str, "10 Points") == 0)
-    {
-        ESP_LOGI(TAG, "NUM POINTS: 10");
-        calibration.num_points = NUM_POINTS_10;
-        table_t table = calloc(TABLE_NUM_ROWS, sizeof(row_t));
-
-        for (int i = 0; i < TABLE_NUM_ROWS; i++)
-        {
-            double value;
-            if (i <= calibration.num_points)
-                value = 0.00 + i * ((calibration.limit_enabled) ? calibration.limit_val : calibration.capacity) / 10.0;
-            else
-                value = 0.00;
-
-            snprintf(table[i][0], sizeof(table[i][0]), "%.*lf", num_decimals, value);
-            snprintf(table[i][1], sizeof(table[i][1]), "%.*lf", num_decimals, 0.0);
-        }
-        return table;
-    }
-    else
-    {
-        ESP_LOGI(TAG, "NUM POINTS: Custom");
-        calibration.num_points = NUM_POINTS_CUSTOM;
-        table_t table = calloc(TABLE_NUM_ROWS, sizeof(row_t));
-
         for (int i = 0; i < TABLE_NUM_ROWS; i++)
         {
             snprintf(table[i][0], sizeof(table[i][0]), "%.*lf", num_decimals, 0.0);
             snprintf(table[i][1], sizeof(table[i][1]), "%.*lf", num_decimals, 0.0);
         }
-        return table;
     }
+    else
+    {
+        for (int i = 0; i < TABLE_NUM_ROWS; i++)
+        {
+            double value;
+            if (i <= num_points)
+                value = 0.00 + i * ((calibration.limit_enabled) ? calibration.limit_val : calibration.capacity) / divisor;
+            else
+                value = 0.00;
+
+            snprintf(table[i][0], sizeof(table[i][0]), "%.*lf", num_decimals, value);
+            snprintf(table[i][1], sizeof(table[i][1]), "%.*lf", num_decimals, 0.0);
+        }
+    }
+
+    return table;
 }
-void inputCalib_set_row_to_fill(void *_row_to_fill)
+void inputCalib_set_row_to_fill(row_to_fill_t _row_to_fill)
 {
-    switch (*(uint8_t *)_row_to_fill)
+    switch (_row_to_fill)
     {
     case 0:
         row_to_fill = ROW_0_TO_FILL;
@@ -383,7 +178,7 @@ void inputCalib_set_row_to_fill(void *_row_to_fill)
         break;
     }
 
-    ESP_LOGI(TAG, "row_to_fill : %x", row_to_fill);
+    ESP_LOGI(TAG, "inputCalib_set_row_to_fill : %u", row_to_fill);
 }
 void inputCalib_set_name(char *name_str)
 {
@@ -394,7 +189,7 @@ void inputCalib_set_name(char *name_str)
         memcpy(calibration.name, name_str, name_len);
         calibration.name_len = name_len;
 
-        ESP_LOGI(TAG, "NAME:%*s", calibration.name_len, calibration.name);
+        ESP_LOGI(TAG, "inputCalib_set_name:%*s", calibration.name_len, calibration.name);
     }
     else
     {
@@ -555,13 +350,10 @@ int inputCalib_get_num_decimals()
 {
     return calibration.num_decimals;
 }
-void inputCalib_set_index(void *i)
+void inputCalib_set_index(int index)
 {
-    int n = *(uint8_t *)i;
-    if (n >= 0 && n < NUM_SENSORS)
-        _index = n;
-
-    ESP_LOGI(TAG, "index:%i", _index);
+    _index = index;
+    ESP_LOGI(TAG, "inputCalib_set_index:%i", index);
 }
 int inputCalib_get_index()
 {
@@ -570,4 +362,8 @@ int inputCalib_get_index()
 row_to_fill_t inputCalib_get_row_to_fill()
 {
     return row_to_fill;
+}
+sensor_calib_t *inputCalib_get_calibration()
+{
+    return &calibration;
 }

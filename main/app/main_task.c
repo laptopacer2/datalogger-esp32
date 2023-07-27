@@ -44,6 +44,8 @@ void main_task(void *arg)
             numpad_popup_loaded_cb(&msg);
         else if (type == NEW_TEST_LOADED)
             new_test_loaded_cb(&msg);
+        else if (type == INPUTCONFIGP1_LOADED)
+            inputconfigp1_loaded_cb(&msg);
 
         // SENSOR TARA
         else if (type == TARA_ENABLED)
@@ -87,6 +89,19 @@ void main_task(void *arg)
             inputcalibp4_name_received_cb(&msg);
         else if (type == INPUTCALIBP4_SAVE_PRESSED)
             inputcalibp4_save_pressed_cb(&msg);
+        // INPUT CONFIGURATION P1
+        else if (type == INPUTCONFIGP1_TYPE_RECEIVED)
+            inputconfigp1_type_received_cb(&msg);
+        else if (type == INPUTCONFIGP1_CAPACITY_RECEIVED)
+            inputconfigp1_capacity_received_cb(&msg);
+        else if (type == INPUTCONFIGP1_CAPACITY_UNIT_RECEIVED)
+            inputconfigp1_capacity_unit_received_cb(&msg);
+        else if (type == INPUTCONFIGP1_NAME_RECEIVED)
+            inputconfigp1_name_received_cb(&msg);
+        else if (type == INPUTCONFIGP1_INDEX_RECEIVED)
+            inputconfigp1_index_received_cb(&msg);
+        else if (type == INPUTCONFIGP1_SAVE_PRESSED)
+            inputconfigp1_save_pressed_cb(&msg);
 
         // SENSOR UNIT CHANGED
         else if (type == SENSOR_UNIT_CHANGED)

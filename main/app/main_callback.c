@@ -11,6 +11,7 @@
 #include "configuration.h"
 #include "esp_err.h"
 #include "testing.h"
+#include "helpers.h"
 
 #define TAG "MAIN_CALLBACK"
 
@@ -46,32 +47,25 @@ void main_task_init()
     // init nvs storage
     inputCalib_init();
 
-    // load all available calibs
     for (int index = 0; index < NUM_SENSORS; index++)
     {
-        sensor_class_t class = sensor_get_class(index);
-        if (class == CLASS_I)
-        {
-            ESP_LOGW(TAG, "inde[%i] is CLASS I", index);
-            continue;
-        }
-
+        // load nvs content: calibrations and configurations
         sensor_calib_t calib;
         sensor_config_t config;
 
         bool load_calib_success = (inputCalib_load(index, &calib) == ESP_OK);
         bool load_config_success = (config_sensor_load(index, &config) == ESP_OK);
-        bool load_success = load_calib_success && load_config_success;
-
-        if (!load_success)
-        {
-            ESP_LOGW(TAG, "file:%s, line:%d", __FILE__, __LINE__);
-            continue;
-        }
 
         // update ram
-        sensor_set_calibration(index, &calib);
-        sensor_set_configuration(index, &config);
+        if (load_calib_success)
+            sensor_set_calibration(index, &calib);
+        else
+            ESP_LOGW(TAG, "file:%s, line:%d", __FILE__, __LINE__);
+
+        if (load_config_success)
+            sensor_set_configuration(index, &config);
+        else
+            ESP_LOGW(TAG, "file:%s, line:%d", __FILE__, __LINE__);
 
         // update objects on screen
         nextion_1_home_write_name(index, sensor_get_name(index));
@@ -151,6 +145,12 @@ void new_test_loaded_cb(msg_t *msg)
     nextion_1_set_page(PAGE_NEW_TEST);
     nextion_1_stop_timer();
 }
+void inputconfigp1_loaded_cb(msg_t *msg)
+{
+    ESP_LOGI(TAG, "%s", __func__);
+    nextion_1_set_page(INPUTCONFIGP1_LOADED);
+    nextion_1_stop_timer();
+}
 
 /*
 ████████╗ █████╗ ██████╗  █████╗
@@ -163,13 +163,41 @@ void new_test_loaded_cb(msg_t *msg)
 */
 void tara_enabled_cb(msg_t *msg)
 {
+    // get index
     int index = msg->content.i32;
+
+    // VERIFY INDEX IN RANGE
+    bool in_range = helper_index_in_range(index);
+    if (!in_range)
+    {
+        ESP_LOGE(TAG, "%s: line %d", __FILE__, __LINE__);
+        return;
+    }
+
+    // update ram
     sensor_set_tara(index);
+
+    // update nvs
+    config_sensor_save(index, sensor_get_configuration(index));
 }
 void tara_disabled_cb(msg_t *msg)
 {
+    // get index
     int index = msg->content.i32;
+
+    // VERIFY INDEX IN RANGE
+    bool in_range = helper_index_in_range(index);
+    if (!in_range)
+    {
+        ESP_LOGE(TAG, "%s: line %d", __FILE__, __LINE__);
+        return;
+    }
+
+    // update ram
     sensor_clear_tara(index);
+
+    // update nvs
+    config_sensor_save(index, sensor_get_configuration(index));
 }
 
 /*
@@ -187,20 +215,35 @@ void sensor_disabled_cb(msg_t *msg)
     // get index
     int index = msg->content.i32;
 
+    // VERIFY INDEX IN RANGE
+    bool in_range = helper_index_in_range(index);
+    if (!in_range)
+    {
+        ESP_LOGE(TAG, "%s: line %d", __FILE__, __LINE__);
+        return;
+    }
+
     // disable physically
     SEND_I32_MSG(sensor_queue, SENSOR_DISABLED, index, portMAX_DELAY);
 
-    // status disabled in ram
+    // update ram
     sensor_disable(index);
 
-    // status disabled in nvs
+    // update nvs
     config_sensor_save(index, sensor_get_configuration(index));
 }
 void sensor_enabled_cb(msg_t *msg)
 {
     // ESP_LOGI(TAG, "file:%s,line:%i", __FILE__, __LINE__);
-
     int index = msg->content.i32;
+
+    // VERIFY INDEX IN RANGE
+    bool in_range = helper_index_in_range(index);
+    if (!in_range)
+    {
+        ESP_LOGE(TAG, "%s: line %d", __FILE__, __LINE__);
+        return;
+    }
 
     // enable physically
     SEND_I32_MSG(sensor_queue, SENSOR_ENABLED, index, portMAX_DELAY);
@@ -224,39 +267,91 @@ void sensor_enabled_cb(msg_t *msg)
 
 void inputcalibp1_type_received_cb(msg_t *msg)
 {
-    char *addr = (char *)(msg->content.addr);
-    inputCalib_set_sensor_type(addr);
-    free(addr);
+    // UNPACK
+    uint8_t type_u8 = *(uint8_t *)(msg->content.addr);
+    free(msg->content.addr);
+
+    // VERIFY TYPE IS IN RANGE
+    bool in_range = helper_type_in_range(type_u8);
+    if (!in_range)
+    {
+        ESP_LOGE(TAG, "%s: line %d", __FILE__, __LINE__);
+        return;
+    }
+
+    // UPDATE RAM
+    inputCalib_set_sensor_type((sensor_type_t)type_u8);
 }
 void inputcalibp1_capacity_received_cb(msg_t *msg)
 {
+    // UNPACK
     char *addr = (char *)(msg->content.addr);
-    inputCalib_set_capacity(addr);
-    free(addr);
+    double capacity = atof(addr);
+    free(msg->content.addr);
+
+    // UPDATE RAM
+    inputCalib_set_capacity(capacity);
 }
 void inputcalibp1_capacity_unit_received_cb(msg_t *msg)
 {
-    char *addr = (char *)(msg->content.addr);
-    inputCalib_set_unit(addr);
-    free(addr);
+    // UNPACK
+    uint8_t unit_u8 = *(uint8_t *)(msg->content.addr);
+    free(msg->content.addr);
+
+    // VERYIFY UNIT IN RANGE
+    bool in_range = helper_unit_in_range(unit_u8, inputCalib_get_sensor_type());
+    if (!in_range)
+    {
+        ESP_LOGE(TAG, "%s: line %d", __FILE__, __LINE__);
+        return;
+    }
+
+    // UPDATE RAM
+    inputCalib_set_unit((sensor_unit_t)unit_u8);
 }
 void inputcalibp1_sensibility_received_cb(msg_t *msg)
 {
+    // UNPACK
     char *addr = (char *)(msg->content.addr);
-    inputCalib_set_sensibility(addr);
-    free(addr);
+    double sensibility = atof(addr);
+    free(msg->content.addr);
+
+    // UPDATE RAM
+    inputCalib_set_sensibility(sensibility);
 }
 void inputcalibp1_sensibility_unit_received_cb(msg_t *msg)
 {
-    char *addr = (char *)(msg->content.addr);
-    inputCalib_set_sensibility_unit(addr);
-    free(addr);
+    // UNPACK
+    uint8_t sensibility_unit_u8 = *(uint8_t *)(msg->content.addr);
+    free(msg->content.addr);
+
+    // VERYIFY UNIT IN RANGE
+    bool in_range = helper_sensibility_unit_in_range(sensibility_unit_u8);
+    if (!in_range)
+    {
+        ESP_LOGE(TAG, "%s: line %d", __FILE__, __LINE__);
+        return;
+    }
+
+    // UPDATE RAM
+    inputCalib_set_sensibility_unit((sensor_sensibility_unit_t)sensibility_unit_u8);
 }
 void inputcalibp1_sensor_index_received(msg_t *msg)
 {
-    void *addr = (msg->content.addr);
-    inputCalib_set_index(addr);
-    free(addr);
+    // UNPACK
+    uint8_t index = *(uint8_t *)(msg->content.addr);
+    free(msg->content.addr);
+
+    // VERIFY INDEX IN RANGE
+    bool in_range = helper_index_in_range(index);
+    if (!in_range)
+    {
+        ESP_LOGE(TAG, "%s: line %d", __FILE__, __LINE__);
+        return;
+    }
+
+    // UPDATE RAM
+    inputCalib_set_index((int)index);
 }
 /*
 ██╗███╗   ██╗██████╗ ██╗   ██╗████████╗     ██████╗ █████╗ ██╗     ██╗██████╗     ██████╗ ██████╗
@@ -270,16 +365,23 @@ void inputcalibp1_sensor_index_received(msg_t *msg)
 
 void inputcalibp2_calibration_limit_received_cb(msg_t *msg)
 {
+    // UNPACK
     char *addr = (char *)(msg->content.addr);
+
+    // UPDATE RAM
     inputCalib_set_limit(addr);
-    free(addr);
+
+    free(msg->content.addr);
 }
 
 void inputcalibp2_limit_enable_receive_cb(msg_t *msg)
 {
-    void *addr = (msg->content.addr);
-    inputCalib_set_limit_enable(addr);
-    free(addr);
+    // UNPACK
+    bool limit_enable = *(bool *)(msg->content.addr);
+    free(msg->content.addr);
+
+    // UPDATE RAM
+    inputCalib_set_limit_enable(limit_enable);
 }
 /*
 ██╗███╗   ██╗██████╗ ██╗   ██╗████████╗     ██████╗ █████╗ ██╗     ██╗██████╗     ██████╗ ██████╗
@@ -299,13 +401,26 @@ void inputcalibp3_table_received(msg_t *msg)
 }
 void inputcalibp3_num_points_received(msg_t *msg)
 {
-    char *addr = (char *)(msg->content.addr);
-    table_t table = inputCalib_set_num_points(addr);
+    // UNPACK
+    uint8_t num_points_u8 = *(uint8_t *)(msg->content.addr);
+    free(msg->content.addr);
+
+    // VERIFY NUM POINTS IN RANGE
+    bool in_range = helper_num_points_in_range(num_points_u8);
+    if (!in_range)
+    {
+        ESP_LOGE(TAG, "%s: line %d", __FILE__, __LINE__);
+        return;
+    }
+
+    // UPDATE RAM
+    table_t table = inputCalib_set_num_points((calib_points_num_t)num_points_u8);
 
     ESP_LOGI(TAG, "NEW TABLE:");
     for (int i = 0; i < 11; i++)
         ESP_LOGI(TAG, "%s - %s", table[i][0], table[i][1]);
 
+    // UPDATE SCREEN
     nextion_1_inputcalibp3_write_real0(table[0][0]);
     nextion_1_inputcalibp3_write_real1(table[1][0]);
     nextion_1_inputcalibp3_write_real2(table[2][0]);
@@ -331,13 +446,23 @@ void inputcalibp3_num_points_received(msg_t *msg)
     nextion_1_inputcalibp3_write_raw10(table[10][1]);
 
     free(table);
-    free(addr);
 }
 void inputcalibp3_row_to_fill_received(msg_t *msg)
 {
-    void *addr = (msg->content.addr);
-    inputCalib_set_row_to_fill(addr);
-    free(addr);
+    // UNPACK
+    uint8_t row_to_fill_u8 = *(uint8_t *)(msg->content.addr);
+    free(msg->content.addr);
+
+    // VERIFY ROW TO FILL IN RANGE
+    bool in_range = helper_row_to_fill_in_Range(row_to_fill_u8);
+    if (!in_range)
+    {
+        ESP_LOGE(TAG, "%s: line %d", __FILE__, __LINE__);
+        return;
+    }
+
+    // update ram
+    inputCalib_set_row_to_fill((row_to_fill_t)row_to_fill_u8);
 }
 
 /*
@@ -360,42 +485,17 @@ void inputcalibp4_save_pressed_cb(msg_t *msg)
 {
     // save current sensor calibration on inpucalib engine
     char *info;
-    bool save_calib_success = (inputCalib_save(&info) == ESP_OK);
+    bool save_calibration_success = (inputCalib_save(&info) == ESP_OK);
 
-    if (!save_calib_success)
-    {
-        // infor text (red)
-        nextion_1_inputcalibp4_write_result_color(63488);
-        nextion_1_inputcalibp4_write_result("Save calibration error");
-        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
-        return;
-    }
-
-    // info text (green)
-    nextion_1_inputcalibp4_write_result_color(3457);
-    nextion_1_inputcalibp4_write_result(info);
-
-    // load last saved calib
-    sensor_calib_t calib;
-    int index;
-    bool load_success = (inputCalib_load_last_saved(&index, &calib) == ESP_OK);
-
-    // load success
-    if (!load_success)
-    {
-        // infor text (red)
-        nextion_1_inputcalibp4_write_result_color(63488);
-        nextion_1_inputcalibp4_write_result("Verify calibration error");
-        inputCalib_delete(index);
-        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
-        return;
-    }
+    // get calibration and index from inputCalib
+    sensor_calib_t *calib = inputCalib_get_calibration();
+    int index = inputCalib_get_index();
 
     // generate configuration from last calibration saved
     sensor_config_t config;
-    config.num_decimals = calib.num_decimals;
+    config.num_decimals = calib->num_decimals;
     config.unit_fc = 1.0;
-    config.unit = calib.unit;
+    config.unit = calib->unit_src;
     config.is_tara_enabled = false;
     config.tara_val = 0.0;
     config.is_sensor_enabled = sensor_is_enabled(index);
@@ -403,21 +503,12 @@ void inputcalibp4_save_pressed_cb(msg_t *msg)
 
     // save configuration in nvs
     bool save_configuration_success = (config_sensor_save(index, &config) == ESP_OK);
-    if (!save_configuration_success)
-    {
-        // infor text (red)
-        nextion_1_inputcalibp4_write_result_color(63488);
-        nextion_1_inputcalibp4_write_result("Save configuration error");
-        inputCalib_delete(index);
-        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
-        return;
-    }
 
     // set configuration in ram
     sensor_set_configuration(index, &config);
 
     // set calibration in ram
-    sensor_set_calibration(index, &calib);
+    sensor_set_calibration(index, calib);
 
     // update objects in screen
     nextion_1_home_write_name(index, sensor_get_name(index));
@@ -429,6 +520,128 @@ void inputcalibp4_save_pressed_cb(msg_t *msg)
     nextion_1_calibration_write_unit(index, sensor_get_unit_str(index));
     nextion_1_calibration_write_units_path(index, sensor_get_units_path(index));
     nextion_1_calibration_write_units_val(index, sensor_get_units_val(index));
+
+    if (!save_configuration_success || !save_calibration_success)
+    {
+        // infor text (red)
+        nextion_1_inputcalibp4_write_result_color(63488);
+        nextion_1_inputcalibp4_write_result("Error: cant save");
+        ESP_LOGE(TAG, "file:%s,line:%i", __FILE__, __LINE__);
+        return;
+    }
+    else
+    {
+        // info text (green)
+        nextion_1_inputcalibp4_write_result_color(3457);
+        nextion_1_inputcalibp4_write_result("Success: saved");
+    }
+}
+
+/*
+██╗███╗   ██╗██████╗ ██╗   ██╗████████╗     ██████╗ ██████╗ ███╗   ██╗███████╗██╗ ██████╗ ██╗   ██╗██████╗  █████╗ ████████╗██╗ ██████╗ ███╗   ██╗
+██║████╗  ██║██╔══██╗██║   ██║╚══██╔══╝    ██╔════╝██╔═══██╗████╗  ██║██╔════╝██║██╔════╝ ██║   ██║██╔══██╗██╔══██╗╚══██╔══╝██║██╔═══██╗████╗  ██║
+██║██╔██╗ ██║██████╔╝██║   ██║   ██║       ██║     ██║   ██║██╔██╗ ██║█████╗  ██║██║  ███╗██║   ██║██████╔╝███████║   ██║   ██║██║   ██║██╔██╗ ██║
+██║██║╚██╗██║██╔═══╝ ██║   ██║   ██║       ██║     ██║   ██║██║╚██╗██║██╔══╝  ██║██║   ██║██║   ██║██╔══██╗██╔══██║   ██║   ██║██║   ██║██║╚██╗██║
+██║██║ ╚████║██║     ╚██████╔╝   ██║       ╚██████╗╚██████╔╝██║ ╚████║██║     ██║╚██████╔╝╚██████╔╝██║  ██║██║  ██║   ██║   ██║╚██████╔╝██║ ╚████║
+╚═╝╚═╝  ╚═══╝╚═╝      ╚═════╝    ╚═╝        ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
+
+*/
+
+void inputconfigp1_type_received_cb(msg_t *msg)
+{
+    // UNPACK
+    uint8_t type_u8 = *(uint8_t *)(msg->content.addr);
+    free(msg->content.addr);
+
+    // VERIFY TYPE IS IN RANGE
+    bool in_range = helper_type_in_range(type_u8);
+    if (!in_range)
+    {
+        ESP_LOGE(TAG, "%s: line %d", __FILE__, __LINE__);
+        return;
+    }
+
+    // UPDATE RAM
+    inputConfig_set_type((sensor_type_t)type_u8);
+}
+void inputconfigp1_capacity_received_cb(msg_t *msg)
+{
+    // UNPACK
+    char *addr = (char *)(msg->content.addr);
+    double capacity = atof(addr);
+    free(msg->content.addr);
+
+    // UPDATE RAM
+    inputConfig_set_capacity(capacity);
+}
+void inputconfigp1_capacity_unit_received_cb(msg_t *msg)
+{
+    // UNPACK
+    uint8_t unit_u8 = *(uint8_t *)(msg->content.addr);
+    free(msg->content.addr);
+
+    // VERYIFY UNIT IN RANGE
+    bool in_range = helper_unit_in_range(unit_u8, inputConfig_get_type());
+    if (!in_range)
+    {
+        ESP_LOGE(TAG, "%s: line %d", __FILE__, __LINE__);
+        return;
+    }
+
+    // UPDATE RAM
+    inputConfig_set_capacity_unit((sensor_unit_t)unit_u8);
+}
+void inputconfigp1_name_received_cb(msg_t *msg)
+{
+    char *addr = (char *)(msg->content.addr);
+    int len = msg->size;
+    inputConfig_set_name(addr, len);
+    free(addr);
+}
+void inputconfigp1_index_received_cb(msg_t *msg)
+{
+    // UNPACK
+    uint8_t index = *(uint8_t *)(msg->content.addr);
+    free(msg->content.addr);
+
+    // VERIFY INDEX IN RANGE
+    bool in_range = helper_index_in_range(index);
+    if (!in_range)
+    {
+        ESP_LOGE(TAG, "%s: line %d", __FILE__, __LINE__);
+        return;
+    }
+
+    // UPDATE RAM
+    inputConfig_set_index((int)index);
+}
+void inputconfigp1_save_pressed_cb(msg_t *msg)
+{
+    // get index
+    int index = inputConfig_get_index();
+
+    // save on ram and nvs
+    char *info;
+    sensor_config_t *config = sensor_get_configuration(index);
+    bool success = inputConfig_save(config, &info);
+
+    // update screen
+    nextion_1_home_write_name(index, sensor_get_name(index));
+    nextion_1_calibration_write_name(index, sensor_get_name(index));
+    nextion_1_calibration_write_range(index, sensor_get_range(index));
+
+    if (success)
+    {
+        // info text (green)
+        nextion_1_inputconfigp1_write_result_color(3457);
+        nextion_1_inputconfigp1_write_result(info);
+    }
+    else
+    {
+        // info text (red)
+        nextion_1_inputconfigp1_write_result_color(63488);
+        nextion_1_inputconfigp1_write_result(info);
+    }
 }
 
 /*
@@ -443,44 +656,39 @@ void inputcalibp4_save_pressed_cb(msg_t *msg)
 
 void sensor_unit_changed(msg_t *msg)
 {
-    content_str_t content = (msg->content.cs);
-    int index = content.index;
+    // UNPACK CONTENT
+    content_str_t cs = (msg->content.cs);
+    int index = cs.index;
+    uint8_t unit_u8 = *(uint8_t *)(cs.str);
+    free(cs.str);
 
-    // VERIFY SENSOR CLASS
-    sensor_class_t class = sensor_get_class(index);
-    if (class == CLASS_I)
+    // VERYIFY UNIT IN RANGE
+    bool unit_in_range = helper_unit_in_range(unit_u8, sensor_get_type(index));
+    if (!unit_in_range)
     {
-        goto update_screen;
+        ESP_LOGE(TAG, "%s: line %d", __FILE__, __LINE__);
+        return;
     }
-    // RETURN_IF_TRUE(class != CLASS_D);
 
-    // UNIT STR TO SENSOR_UNIT_T
-    esp_err_t err;
-    sensor_unit_t new_unit;
-    err = config_get_unit_from_str(content.str, &new_unit);
-    free(content.str);
-    RETURN_IF_TRUE(err != ESP_OK);
+    // VERIFY INDEX IN RANGE
+    bool index_in_range = helper_index_in_range(index);
+    if (!index_in_range)
+    {
+        ESP_LOGE(TAG, "%s: line %d", __FILE__, __LINE__);
+        return;
+    }
 
-    // VERIFY NEW UNIT IS IN VALID RANGE
-    sensor_type_t type = sensor_get_type(index);
-    bool res = config_is_unit_ok(new_unit, type);
-    RETURN_IF_TRUE(res != true);
-
-    // CREATE NEW SENSOR CONFIGURATION
+    // CREATE NEW SENSOR CONFIGURATION && SET ON RAM
+    sensor_unit_t new_unit = (sensor_unit_t)unit_u8;
     sensor_type_t old_unit = sensor_get_src_unit(index);
-    double new_fc = config_get_fc(old_unit, new_unit, type);
+    double new_fc = helper_get_fc(old_unit, new_unit, sensor_get_type(index));
     sensor_config_t *config = sensor_get_configuration(index);
     config->unit_fc = new_fc;
     config->unit = new_unit;
 
     // SAVE NEW CONFIGURATION ON NVS
-    err = config_sensor_save(index, config);
-    RETURN_IF_TRUE(err != ESP_OK);
+    config_sensor_save(index, config);
 
-    // SET NEW CONFIGURATION ON RAM
-    sensor_set_configuration(index, config);
-
-update_screen:
     // UPDATE SCREEN
     nextion_1_home_write_unit(index, sensor_get_unit_str(index));
     nextion_1_home_write_unitps(index, sensor_get_unitps_str(index));
@@ -499,8 +707,21 @@ update_screen:
 */
 void sensor_limits_enabled(msg_t *msg)
 {
+    // get index
     int index = msg->content.i32;
+
+    // VERIFY INDEX IN RANGE
+    bool in_range = helper_index_in_range(index);
+    if (!in_range)
+    {
+        ESP_LOGE(TAG, "%s: line %d", __FILE__, __LINE__);
+        return;
+    }
+
+    // set on ram
     sensor_set_limits(index, true);
+
+    // set on nvs
     config_sensor_save(index, sensor_get_configuration(index));
 }
 
@@ -515,8 +736,21 @@ void sensor_limits_enabled(msg_t *msg)
 */
 void sensor_limits_disabled(msg_t *msg)
 {
+    // get index
     int index = msg->content.i32;
+
+    // VERIFY INDEX IN RANGE
+    bool in_range = helper_index_in_range(index);
+    if (!in_range)
+    {
+        ESP_LOGE(TAG, "%s: line %d", __FILE__, __LINE__);
+        return;
+    }
+
+    // set on ram
     sensor_set_limits(index, false);
+
+    // set on nvs
     config_sensor_save(index, sensor_get_configuration(index));
 }
 
@@ -532,9 +766,12 @@ void sensor_limits_disabled(msg_t *msg)
 
 void sensor_reading_received_cb(msg_t *msg)
 {
+    // UNPACK
     content_reading_t cr = msg->content.cr;
     int index = cr.index;
     reading_t reading = cr.reading;
+
+    // SET ON RAM
     sensor_set_data(index, &reading);
 }
 void sensor_class_received_cb(msg_t *msg)
@@ -727,5 +964,4 @@ void new_test_stop_cb(msg_t *msg)
 void new_test_download_cb(msg_t *msg)
 {
     // ESP_LOGW(TAG, "%s:line %d", __FILE__, __LINE__);
-    
 }

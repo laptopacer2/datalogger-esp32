@@ -15,6 +15,7 @@ void inputcalibp3_loaded_cb(msg_t *msg);
 void inputcalibp4_loaded_cb(msg_t *msg);
 void numpad_popup_loaded_cb(msg_t *msg);
 void new_test_loaded_cb(msg_t *msg);
+void inputconfigp1_loaded_cb(msg_t *msg);
 
 // TARA
 void tara_enabled_cb(msg_t *msg);
@@ -41,6 +42,13 @@ void inputcalibp3_row_to_fill_received(msg_t *msg);
 // INPUT CALIB P4
 void inputcalibp4_name_received_cb(msg_t *msg);
 void inputcalibp4_save_pressed_cb(msg_t *msg);
+// INPUT CONFIGURATION P1
+void inputconfigp1_type_received_cb(msg_t *msg);
+void inputconfigp1_capacity_received_cb(msg_t *msg);
+void inputconfigp1_capacity_unit_received_cb(msg_t *msg);
+void inputconfigp1_name_received_cb(msg_t *msg);
+void inputconfigp1_index_received_cb(msg_t *msg);
+void inputconfigp1_save_pressed_cb(msg_t *msg);
 
 // SENSOR UNIT CHANGED
 void sensor_unit_changed(msg_t *msg);
