@@ -68,7 +68,7 @@ bool helper_num_points_in_range(uint8_t num_points_u8)
 bool helper_row_to_fill_in_Range(uint8_t row_to_fill_u8)
 {
     uint8_t r_min = (uint8_t)ROW_0_TO_FILL;
-    uint8_t r_max = (uint8_t)ROW_10_TO_FILL;
+    uint8_t r_max = (uint8_t)ROW_NOT_TO_FILL;
     return ((row_to_fill_u8 >= r_min) && (row_to_fill_u8 <= r_max));
 }
 //***************************************** TO:
